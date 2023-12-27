@@ -3,17 +3,17 @@
 Object.defineProperty(exports, "__esModule", {
 	"value": true
 });
-var _0x28bf0a;
-(function (_0xe2ce1c) {
-	_0xe2ce1c[_0xe2ce1c.NORMAL = 0] = "NORMAL";
-	_0xe2ce1c[_0xe2ce1c.SECOND = 0x1] = "SECOND";
-	_0xe2ce1c[_0xe2ce1c.ALPHA = 0x2] = "ALPHA";
-})(_0x28bf0a = exports.KeypadMetaState || (exports.KeypadMetaState = {}));
-var _0x5f138b;
-(function (_0x1099d5) {
-	_0x1099d5[_0x1099d5.STOPPED = 0] = "STOPPED";
-	_0x1099d5[_0x1099d5.INITIALIZING = 0x1] = "INITIALIZING";
-	_0x1099d5[_0x1099d5.BUSY = 0x2] = "BUSY";
-	_0x1099d5[_0x1099d5.IDLE = 0x3] = "IDLE";
-	_0x1099d5[_0x1099d5.PAUSED = 0x4] = "PAUSED";
-})(_0x5f138b = exports.ASICState || (exports.ASICState = {}));
+var KeypadMetaState;
+(function (kp_state) {
+	kp_state[kp_state.NORMAL = 0] = "NORMAL";
+	kp_state[kp_state.SECOND = 1] = "SECOND";
+	kp_state[kp_state.ALPHA =  2] = "ALPHA";
+})(KeypadMetaState = exports.KeypadMetaState || (exports.KeypadMetaState = {}));
+var ASICState;
+(function (state) {
+	state[state.STOPPED = 0] = "STOPPED";
+	state[state.INITIALIZING = 0x1] = "INITIALIZING";
+	state[state.BUSY = 0x2] = "BUSY";
+	state[state.IDLE = 0x3] = "IDLE";
+	state[state.PAUSED = 0x4] = "PAUSED";
+})(ASICState = exports.ASICState || (exports.ASICState = {}));

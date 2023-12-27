@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 const error_strings = require("./ErrorStrings");
 const asic = require("./ASIC");
 const utilities = require("./Utilities");
-const _0x4195f0 = -1;
+
 class GenericKeypad {
-	constructor(_0x12b039, _0x287137, _0xed76d6) {
+	constructor(divId, settings, asic) {
 		this.hasAKeyBeenPressed = false;
 		this.keyHistoryPointer = 0;
 		this.keyHistBufferMaxLength = 0;
@@ -37,11 +37,11 @@ class GenericKeypad {
 		this.useScancodes = false;
 		this.keyHistoryBuffer = [];
 		this.DOMKeys = [];
-		this.divId = _0x12b039;
-		this.settings = _0x287137;
-		this.asic = _0xed76d6;
+		this.divId = divId;
+		this.settings = settings;
+		this.asic = asic;
 	}
-	["start"]() {
+	start() {
 		const _0x2a346b = document.getElementById(this.divId);
 		return utilities.Utilities.loadSVG(this.settings.svgUrl).then(_0x13cecf => {
 			this.svg = _0x13cecf;
@@ -50,31 +50,31 @@ class GenericKeypad {
 			this.acceptInput(true);
 		});
 	}
-	["stop"]() {
-		return new Promise((_0xd9ffeb, _0x17719c) => {
-			_0xd9ffeb();
+	stop() {
+		return new Promise((resolve, reject) => {
+			resolve();
 		});
 	}
-	["reset"]() {
-		return new Promise((_0x492b84, _0x57755d) => {
-			_0x492b84();
+	reset() {
+		return new Promise((resolve, reject) => {
+			resolve();
 		});
 	}
-	["getState"]() {
+	getState() {
 		return null;
 	}
-	["setState"](_0x239788) {}
-	["updateKeyPressHistory"](_0x4ea522) {
+	setState(state) {}
+	updateKeyPressHistory(buffer) {
 		if (this.keyHistBufferMaxLength > 0) {
-			this.keyHistoryBuffer[this.keyHistoryPointer] = _0x4ea522;
-			this.keyHistoryPointer = (this.keyHistoryPointer + 0x1) % this.keyHistBufferMaxLength;
+			this.keyHistoryBuffer[this.keyHistoryPointer] = buffer;
+			this.keyHistoryPointer = (this.keyHistoryPointer + 1) % this.keyHistBufferMaxLength;
 		}
 	}
-	["deleteKeyPressHistory"]() {
+	deleteKeyPressHistory() {
 		this.keyHistoryBuffer.length = 0;
 		this.keyHistoryPointer = 0;
 	}
-	["getKeyPressHistory"]() {
+	getKeyPressHistory() {
 		const _0x524054 = [];
 		if (this.keyHistoryBuffer.length === this.keyHistBufferMaxLength && this.keyHistoryPointer !== 0) {
 			const _0x269db4 = this.keyHistoryPointer;
@@ -84,11 +84,11 @@ class GenericKeypad {
 		}
 		return this.keyHistoryBuffer;
 	}
-	["mouseDownHandler"](_0x103e3c) {
+	mouseDownHandler(_0x103e3c) {
 		if (this.shouldAcceptInput) {
 			if (_0x103e3c.currentTarget instanceof Element) {
 				const _0x158e7e = _0x103e3c.currentTarget;
-				if (_0x103e3c instanceof TouchEvent || _0x103e3c.buttons === 0x1 || _0x103e3c.button === 0) {
+				if (_0x103e3c instanceof TouchEvent || _0x103e3c.buttons === 1 || _0x103e3c.button === 0) {
 					if (!this.isSVGKeyPressed && this.isKeyEnabled(_0x158e7e.id)) {
 						this.div.focus();
 						_0x103e3c.stopPropagation();
@@ -105,7 +105,7 @@ class GenericKeypad {
 			}
 		}
 	}
-	["mouseUpHandler"](_0x5a609d) {
+	mouseUpHandler(_0x5a609d) {
 		if (_0x5a609d.currentTarget instanceof Element) {
 			const _0x568360 = _0x5a609d.currentTarget;
 			if (this.isSVGKeyPressed && this.lastButtonPressed === _0x568360) {
@@ -119,22 +119,22 @@ class GenericKeypad {
 			}
 		}
 	}
-	["mouseOutHandler"](_0x70c9c9) {
+	mouseOutHandler(_0x70c9c9) {
 		const _0x301b13 = _0x70c9c9.currentTarget || _0x70c9c9.target || _0x70c9c9.srcElement;
 		if (this.isSVGKeyPressed && this.lastButtonPressed === _0x301b13) {
 			this.mouseUpHandler(_0x70c9c9);
 		}
 	}
-	["mouseLeaveHandler"](_0x565ff1) {
+	mouseLeaveHandler(_0x565ff1) {
 		const _0x15aab5 = _0x565ff1.currentTarget || _0x565ff1.target || _0x565ff1.srcElement;
 		if (this.isSVGKeyPressed && this.lastButtonPressed === _0x15aab5) {
 			this.mouseUpHandler(_0x565ff1);
 		}
 	}
-	["toggleEnableKeyButtons"](_0x2f364a, _0x265a20) {
-		let _0x3d99fc = -0x1;
+	toggleEnableKeyButtons(_0x2f364a, _0x265a20) {
+		let _0x3d99fc = -1;
 		let _0xd0d695 = function (_0x226b47) {
-			return _0x2f364a.indexOf(_0x226b47) === _0x4195f0;
+			return _0x2f364a.indexOf(_0x226b47) === -1;
 		};
 		let _0x19b820 = function (_0x22d1af) {
 			utilities.Utilities.addClass(document.getElementById(_0x22d1af), this.disableClass);
@@ -163,11 +163,11 @@ class GenericKeypad {
 		_0x5f2bb9 = undefined;
 		return _0x3d99fc;
 	}
-	["initKeysFromDOM"]() {
-		const _0x611873 = this;
+	initKeysFromDOM() {
+		const this_ = this;
 		let _0x364253 = false;
 		let _0x4fe4ae = false;
-		let _0x446b48;
+		let resize;
 		if (this.hasBeenInitialized) {
 			this.finalize();
 		}
@@ -180,117 +180,117 @@ class GenericKeypad {
 			return _0x1bdb70.keyCode[0];
 		});
 		this.allAltKeyCodes = this.settings.SVGKeys.map(function (_0x15922a) {
-			return _0x15922a.keyCode[0x1];
+			return _0x15922a.keyCode[1];
 		});
 		this.allCodes = this.settings.SVGKeys.map(function (_0x597dca) {
 			return _0x597dca.code;
 		});
 		if (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/Windows Phone/i) || "ontouchstart" in window || navigator.msMaxTouchPoints > 0) {
-			let _0x4edafe = window.orientation;
-			_0x446b48 = function () {
-				if (window.orientation !== _0x4edafe) {
-					_0x4edafe = window.orientation;
-					_0x611873.userOnBlurHandler();
+			let orientation = window.orientation;
+			resize = function () {
+				if (window.orientation !== orientation) {
+					orientation = window.orientation;
+					this_.userOnBlurHandler();
 				}
 			};
-			window.addEventListener("resize", _0x446b48, false);
-			window.addEventListener("orientationchange", _0x446b48, false);
+			window.addEventListener("resize", resize, false);
+			window.addEventListener("orientationchange", resize, false);
 		}
 		this.div = document.getElementById(this.divId);
-		this.div.onkeydown = function (_0x6f320d) {
-			_0x6f320d.preventDefault();
-			_0x611873.userKeyDownHandler(_0x6f320d);
+		this.div.onkeydown = function (event) {
+			event.preventDefault();
+			this_.userKeyDownHandler(event);
 		};
-		this.div.onkeyup = function (_0x488732) {
-			_0x488732.preventDefault();
-			_0x611873.userKeyUpHandler(_0x488732);
+		this.div.onkeyup = function (event) {
+			event.preventDefault();
+			this_.userKeyUpHandler(event);
 		};
-		this.div.onmousedown = function (_0x3c457e) {
-			_0x3c457e.preventDefault();
-			_0x611873.div.focus();
+		this.div.onmousedown = function (event) {
+			event.preventDefault();
+			this_.div.focus();
 		};
-		this.div.onblur = function (_0x5ee9f5) {
-			_0x611873.userOnBlurHandler();
+		this.div.onblur = function (event) {
+			this_.userOnBlurHandler();
 		};
-		this.div.oncontextmenu = function (_0x406e39) {
-			_0x406e39.preventDefault();
+		this.div.oncontextmenu = function (event) {
+			event.preventDefault();
 		};
-		const _0x39acef = function (_0x518490) {
-			_0x611873.mouseDownHandler(_0x518490);
+		const MSPointerDown = function (event) {
+			this_.mouseDownHandler(event);
 		};
-		const _0x1bd832 = function (_0x3ad28e) {
-			_0x611873.mouseUpHandler(_0x3ad28e);
+		const MSPointerUp = function (event) {
+			this_.mouseUpHandler(event);
 		};
-		const _0x386c71 = function (_0x2868d7) {
-			_0x2868d7.preventDefault();
+		const contextmenu = function (event) {
+			event.preventDefault();
 		};
-		const _0x28c144 = function (_0x4ab09a) {
-			_0x611873.mouseOutHandler(_0x4ab09a);
+		const MSPointerOut = function (event) {
+			this_.mouseOutHandler(event);
 		};
-		const _0x3294f8 = function (_0x40ccef) {
-			_0x611873.mouseLeaveHandler(_0x40ccef);
+		const MSPointerLeave = function (event) {
+			this_.mouseLeaveHandler(event);
 		};
-		const _0x433f85 = function (_0x296fc3) {
-			if (_0x296fc3.targetTouches.length === 0x1) {
-				_0x296fc3.preventDefault();
+		const touchmove = function (event) {
+			if (event.targetTouches.length === 0x1) {
+				event.preventDefault();
 			}
 		};
-		const _0x76cb75 = this.getInputPlatform();
-		if (_0x76cb75 === 0x1) {
+		const input_platform = this.getInputPlatform();
+		if (input_platform === 1) {
 			if ("ontouchleave" in window) {
 				_0x364253 = true;
 			}
 			_0x4fe4ae = true;
 		}
-		const _0x5be541 = this.allKeys.length;
-		for (let _0x2332f6 = 0; _0x2332f6 < _0x5be541; _0x2332f6 += 0x1) {
-			this.DOMKeys.push(document.getElementById(this.allKeys[_0x2332f6]));
-			if (!this.DOMKeys[_0x2332f6]) {
-				throw new Error("SVG is missing Key " + this.settings.SVGKeys[_0x2332f6].SVGKey);
+		const numkeys = this.allKeys.length;
+		for (let i = 0; i < numkeys; i += 0x1) {
+			this.DOMKeys.push(document.getElementById(this.allKeys[i]));
+			if (!this.DOMKeys[i]) {
+				throw new Error("SVG is missing Key " + this.settings.SVGKeys[i].SVGKey);
 			}
-			switch (_0x76cb75) {
+			switch (input_platform) {
 				case 0:
-					this.DOMKeys[_0x2332f6].addEventListener("MSPointerDown", _0x39acef);
-					this.DOMKeys[_0x2332f6].addEventListener("MSPointerUp", _0x1bd832);
-					this.DOMKeys[_0x2332f6].addEventListener("MSPointerOut", _0x28c144);
+					this.DOMKeys[i].addEventListener("MSPointerDown", MSPointerDown);
+					this.DOMKeys[i].addEventListener("MSPointerUp", MSPointerUp);
+					this.DOMKeys[i].addEventListener("MSPointerOut", MSPointerOut);
 					break;
-				case 0x1:
-					this.DOMKeys[_0x2332f6].addEventListener("touchstart", _0x39acef);
-					this.DOMKeys[_0x2332f6].addEventListener("touchmove", _0x433f85);
-					this.DOMKeys[_0x2332f6].addEventListener("contextmenu", _0x386c71);
-					this.DOMKeys[_0x2332f6].addEventListener("touchend", _0x1bd832);
+				case 1:
+					this.DOMKeys[i].addEventListener("touchstart", MSPointerDown);
+					this.DOMKeys[i].addEventListener("touchmove", touchmove);
+					this.DOMKeys[i].addEventListener("contextmenu", contextmenu);
+					this.DOMKeys[i].addEventListener("touchend", MSPointerUp);
 					if (_0x364253) {
-						this.DOMKeys[_0x2332f6].addEventListener("touchleave", _0x28c144);
+						this.DOMKeys[i].addEventListener("touchleave", MSPointerOut);
 					}
 					if (!_0x4fe4ae) {
 						break;
 					}
 				default:
-					this.DOMKeys[_0x2332f6].onmousedown = _0x39acef;
-					this.DOMKeys[_0x2332f6].onmouseup = _0x1bd832;
-					if (navigator.userAgent.indexOf("Edge") !== -0x1) {
-						this.DOMKeys[_0x2332f6].onmouseout = _0x28c144;
+					this.DOMKeys[i].onmousedown = MSPointerDown;
+					this.DOMKeys[i].onmouseup = MSPointerUp;
+					if (navigator.userAgent.indexOf("Edge") !== -1) {
+						this.DOMKeys[i].onmouseout = MSPointerOut;
 					} else {
-						const _0x54f6f7 = this.DOMKeys[_0x2332f6];
-						_0x54f6f7.onmouseleave = _0x3294f8;
+						const evnt = this.DOMKeys[i];
+						evnt.onmouseleave = MSPointerLeave;
 					}
 					break;
 			}
 		}
 		this.hasBeenInitialized = true;
 	}
-	["getInputPlatform"]() {
-		let _0x3ca515;
+	getInputPlatform() {
+		let platform;
 		if (window.navigator.msPointerEnabled) {
-			_0x3ca515 = 0;
+			platform = 0;
 		} else if ("ontouchstart" in window) {
-			_0x3ca515 = 0x1;
+			platform = 1;
 		} else {
-			_0x3ca515 = 0x2;
+			platform = 2;
 		}
-		return _0x3ca515;
+		return platform;
 	}
-	["finalize"]() {
+	finalize() {
 		this.allKeys.length = 0;
 		this.allPrimaryKeyCodes.length = 0;
 		this.allAltKeyCodes.length = 0;
@@ -302,7 +302,7 @@ class GenericKeypad {
 		this.hasBeenInitialized = false;
 		this.calcMode = asic.KeypadMetaState.NORMAL;
 	}
-	["userOnBlurHandler"]() {
+	userOnBlurHandler() {
 		let _0x2560bc = 0;
 		let _0x5cc66a = 0;
 		let _0x5a6812 = 0;
@@ -327,38 +327,38 @@ class GenericKeypad {
 			}
 			if (this.lastPressedKey) {
 				const _0x2d9f6a = this.lastPressedKey;
-				while (!_0x2f4442 && _0x2560bc !== _0x4195f0) {
+				while (!_0x2f4442 && _0x2560bc !== -1) {
 					_0x2560bc = this.allPrimaryKeyCodes.indexOf(_0x2d9f6a.keyboardCode, _0x5cc66a);
-					if (_0x2560bc !== _0x4195f0 && this.settings.SVGKeys[_0x2560bc].shiftKey[0] === _0x2d9f6a.shiftKey) {
+					if (_0x2560bc !== -1 && this.settings.SVGKeys[_0x2560bc].shiftKey[0] === _0x2d9f6a.shiftKey) {
 						_0x7e157f = this.allKeys[_0x2560bc];
 						_0x2f4442 = true;
 						break;
 					}
-					if (_0x2560bc === this.allPrimaryKeyCodes.length - 0x1) {
-						_0x2560bc = _0x4195f0;
+					if (_0x2560bc === this.allPrimaryKeyCodes.length - 1) {
+						_0x2560bc = -1;
 						break;
 					}
-					_0x5cc66a = _0x2560bc + 0x1;
+					_0x5cc66a = _0x2560bc + 1;
 				}
 				if (!_0x2f4442) {
 					_0x5a6812 = 0x1;
 					_0x5cc66a = 0;
 					_0x2560bc = 0;
 				}
-				while (!_0x2f4442 && _0x2560bc !== _0x4195f0) {
+				while (!_0x2f4442 && _0x2560bc !== -1) {
 					_0x2560bc = this.allAltKeyCodes.indexOf(_0x2d9f6a.keyboardCode, _0x5cc66a);
-					if (_0x2560bc !== _0x4195f0 && this.settings.SVGKeys[_0x2560bc].shiftKey[_0x5a6812] === _0x2d9f6a.shiftKey) {
+					if (_0x2560bc !== -1 && this.settings.SVGKeys[_0x2560bc].shiftKey[_0x5a6812] === _0x2d9f6a.shiftKey) {
 						_0x7e157f = this.allKeys[_0x2560bc];
 						_0x2f4442 = true;
 						break;
 					}
-					if (_0x2560bc === this.allPrimaryKeyCodes.length - 0x1) {
-						_0x2560bc = _0x4195f0;
+					if (_0x2560bc === this.allPrimaryKeyCodes.length - 1) {
+						_0x2560bc = -1;
 						break;
 					}
 					_0x5cc66a = _0x2560bc + 0x1;
 				}
-				if (_0x2560bc !== _0x4195f0 && _0x2f4442) {
+				if (_0x2560bc !== -1 && _0x2f4442) {
 					this.releaseKey(this.allCodes[_0x2560bc]);
 					utilities.Utilities.removeClass(document.getElementById(_0x7e157f), this.highlightClass);
 					this.lastPressedKey = undefined;
@@ -368,9 +368,9 @@ class GenericKeypad {
 			}
 		}
 	}
-	["userKeyUpHandler"](_0x5ca3e5) {
+	userKeyUpHandler(_0x5ca3e5) {
 		this.isOutOfFocus = false;
-		if (!this.isHidden() && this.isSVGKeyPressed && _0x5ca3e5.keyCode !== 0x9) {
+		if (!this.isHidden() && this.isSVGKeyPressed && _0x5ca3e5.keyCode !== 9) {
 			let _0x5e36f0;
 			let _0x2e5aa9 = false;
 			let _0x32bdd8 = 0;
@@ -380,36 +380,36 @@ class GenericKeypad {
 				_0x8cd434 = this.lastPressedKey;
 			}
 			let _0x46ec59 = 0;
-			while (!_0x2e5aa9 && _0x46ec59 !== _0x4195f0) {
+			while (!_0x2e5aa9 && _0x46ec59 !== -1) {
 				_0x46ec59 = this.allPrimaryKeyCodes.indexOf(_0x8cd434.keyboardCode, _0xa9ceaa);
-				if (_0x46ec59 !== _0x4195f0 && this.settings.SVGKeys[_0x46ec59].shiftKey[0] === _0x8cd434.shiftKey) {
+				if (_0x46ec59 !== -1 && this.settings.SVGKeys[_0x46ec59].shiftKey[0] === _0x8cd434.shiftKey) {
 					_0x5e36f0 = this.allKeys[_0x46ec59];
 					_0x2e5aa9 = true;
 					break;
 				}
-				if (_0x46ec59 === this.allPrimaryKeyCodes.length - 0x1) {
-					_0x46ec59 = _0x4195f0;
+				if (_0x46ec59 === this.allPrimaryKeyCodes.length - 1) {
+					_0x46ec59 = -1;
 					break;
 				}
-				_0xa9ceaa = _0x46ec59 + 0x1;
+				_0xa9ceaa = _0x46ec59 + 1;
 			}
 			if (!_0x2e5aa9) {
-				_0x32bdd8 = 0x1;
+				_0x32bdd8 = 1;
 				_0xa9ceaa = 0;
 				_0x46ec59 = 0;
 			}
-			while (!_0x2e5aa9 && _0x46ec59 !== _0x4195f0) {
+			while (!_0x2e5aa9 && _0x46ec59 !== -1) {
 				_0x46ec59 = this.allAltKeyCodes.indexOf(_0x8cd434.keyboardCode, _0xa9ceaa);
-				if (_0x46ec59 !== _0x4195f0 && this.settings.SVGKeys[_0x46ec59].shiftKey[_0x32bdd8] === _0x8cd434.shiftKey) {
+				if (_0x46ec59 !== -1 && this.settings.SVGKeys[_0x46ec59].shiftKey[_0x32bdd8] === _0x8cd434.shiftKey) {
 					_0x5e36f0 = this.allKeys[_0x46ec59];
 					_0x2e5aa9 = true;
 					break;
 				}
-				if (_0x46ec59 === this.allPrimaryKeyCodes.length - 0x1) {
-					_0x46ec59 = _0x4195f0;
+				if (_0x46ec59 === this.allPrimaryKeyCodes.length - 1) {
+					_0x46ec59 = -1;
 					break;
 				}
-				_0xa9ceaa = _0x46ec59 + 0x1;
+				_0xa9ceaa = _0x46ec59 + 1;
 			}
 			if (_0x2e5aa9 && this.lastPressedKey.hasOwnProperty("keyboardCode") && this.lastPressedKey.keyboardCode === _0x8cd434.keyboardCode && this.lastPressedKey.hasOwnProperty("shiftKey") && this.lastPressedKey.shiftKey === _0x8cd434.shiftKey && this.isKeyEnabled(_0x5e36f0)) {
 				_0x5ca3e5.preventDefault();
@@ -421,16 +421,16 @@ class GenericKeypad {
 			}
 		}
 	}
-	["userKeyDownHandler"](_0x5b768f) {
+	userKeyDownHandler(_0x5b768f) {
 		if (this.shouldAcceptInput && !this.isOutOfFocus) {
-			let _0x27804b = -0x2;
+			let _0x27804b = -2;
 			let _0x366806 = 0;
 			let _0x117c6b = 0;
 			let _0x15153b = false;
 			const _0x29e3a = this.browserKeymapping(_0x5b768f);
-			while (!_0x15153b && _0x27804b !== _0x4195f0) {
+			while (!_0x15153b && _0x27804b !== -1) {
 				_0x27804b = this.allPrimaryKeyCodes.indexOf(_0x29e3a.keyboardCode, _0x117c6b);
-				if (_0x27804b !== _0x4195f0 && this.settings.SVGKeys[_0x27804b].shiftKey[_0x366806] === _0x29e3a.shiftKey && this.isKeyEnabled(this.allKeys[_0x27804b])) {
+				if (_0x27804b !== -1 && this.settings.SVGKeys[_0x27804b].shiftKey[_0x366806] === _0x29e3a.shiftKey && this.isKeyEnabled(this.allKeys[_0x27804b])) {
 					_0x5b768f.preventDefault();
 					document.onhelp = function () {
 						return false;
@@ -447,26 +447,26 @@ class GenericKeypad {
 						}
 					}
 				}
-				if (_0x27804b === this.allPrimaryKeyCodes.length - 0x1) {
-					_0x27804b = -0x1;
+				if (_0x27804b === this.allPrimaryKeyCodes.length - 1) {
+					_0x27804b = -1;
 				} else {
-					_0x117c6b = _0x27804b + 0x1;
+					_0x117c6b = _0x27804b + 1;
 				}
 			}
 			if (!_0x15153b) {
 				_0x117c6b = 0;
-				_0x27804b = -0x2;
-				_0x366806 = 0x1;
+				_0x27804b = -2;
+				_0x366806 = 1;
 			}
-			while (!_0x15153b && _0x27804b !== _0x4195f0) {
+			while (!_0x15153b && _0x27804b !== -1) {
 				_0x27804b = this.allAltKeyCodes.indexOf(_0x29e3a.keyboardCode, _0x117c6b);
-				if (_0x27804b !== _0x4195f0 && this.settings.SVGKeys[_0x27804b].shiftKey[_0x366806] === _0x29e3a.shiftKey && this.isKeyEnabled(this.allKeys[_0x27804b])) {
+				if (_0x27804b !== -1 && this.settings.SVGKeys[_0x27804b].shiftKey[_0x366806] === _0x29e3a.shiftKey && this.isKeyEnabled(this.allKeys[_0x27804b])) {
 					_0x5b768f.preventDefault();
 					document.onhelp = function () {
 						return false;
 					};
 					if (!this.isSVGKeyPressed && !this.isHidden()) {
-						if (_0x5b768f.keyCode !== 0x10 && _0x5b768f.keyCode !== 0x9) {
+						if (_0x5b768f.keyCode !== 0x10 && _0x5b768f.keyCode !== 9) {
 							this.lastPressedKey = _0x29e3a;
 							utilities.Utilities.addClass(document.getElementById(this.allKeys[_0x27804b]), this.highlightClass);
 							this.setKey(this.allCodes[_0x27804b]);
@@ -476,15 +476,15 @@ class GenericKeypad {
 						}
 					}
 				}
-				if (_0x27804b === this.allPrimaryKeyCodes.length - 0x1) {
-					_0x27804b = -0x1;
+				if (_0x27804b === this.allPrimaryKeyCodes.length - 1) {
+					_0x27804b = -1;
 				} else {
-					_0x117c6b = _0x27804b + 0x1;
+					_0x117c6b = _0x27804b + 1;
 				}
 			}
 		}
 	}
-	["browserKeymapping"](event) {
+	browserKeymapping(event) {
 		let keycode = event.keyCode;
 		let shift_key = event.shiftKey;
 		const key = event.key;
@@ -569,123 +569,123 @@ class GenericKeypad {
 			"shiftKey": shift_key
 		};
 	}
-	["isKeyEnabled"](_0x14db77) {
-		return _0x14db77.includes("_KEY_") && (this.currentDisabledKeys.length === 0 || this.currentDisabledKeys.toString().indexOf(_0x14db77) === _0x4195f0);
+	isKeyEnabled(key) {
+		return key.includes("_KEY_") && (this.currentDisabledKeys.length === 0 || this.currentDisabledKeys.toString().indexOf(key) === -1);
 	}
-	["getCodeIndex"](_0x5514ed) {
+	getCodeIndex(_0x5514ed) {
 		return this.allCodes.indexOf(_0x5514ed);
 	}
-	["setKeyMapping"]() {
-		let _0x16472c = [];
-		let _0x2fbd9c = this;
+	setKeyMapping() {
+		let json = [];
+		let svgkeys = this;
 		if (!this.keyMappingFile) {
 			throw new Error(error_strings.ERROR_SERVER_CONNECTION_OR_KEY_MAPPING_NA);
 		}
 		if (this.keyMappingFile.split(".").pop() === this.keyMappingFileExtension) {
-			const _0x461daf = new XMLHttpRequest();
-			let _0x1f4742 = false;
+			const request = new XMLHttpRequest();
+			let timed_out = false;
 			const _0x25f99d = setTimeout(function () {
-				_0x1f4742 = true;
-				_0x461daf.abort();
+				timed_out = true;
+				request.abort();
 				throw new Error(error_strings.ERROR_SERVER_CONNECTION_OR_KEY_MAPPING_NA);
-			}, 0x1388);
-			_0x461daf.open("GET", this.keyMappingFile, true);
-			_0x461daf.onreadystatechange = function () {
-				if (_0x461daf.readyState !== 0x4) {
+			}, 5000);
+			request.open("GET", this.keyMappingFile, true);
+			request.onreadystatechange = function () {
+				if (request.readyState !== 4) {
 					return false;
 				}
-				if (_0x1f4742) {
+				if (timed_out) {
 					return false;
 				}
 				clearTimeout(_0x25f99d);
-				if (_0x461daf.status === 0xc8) {
+				if (request.status === 200) {
 					try {
-						_0x16472c = JSON.parse(_0x461daf.responseText);
-					} catch (_0x39db80) {
+						json = JSON.parse(request.responseText);
+					} catch (e) {
 						throw new Error(error_strings.ERROR_KEY_MAPPING_DAMAGED);
 					}
-					if (_0x16472c.length > 0) {
-						_0x16472c.forEach(function (_0x491fc7) {
-							const _0x1b6567 = this.getCodeIndex(_0x491fc7.code);
-							if (_0x1b6567 !== -0x1) {
-								for (let _0x4e70f9 = 0; _0x4e70f9 < 0x2; _0x4e70f9 += 0x1) {
-									let _0x32acf3 = this.allPrimaryKeyCodes.indexOf(_0x491fc7.keyCode[_0x4e70f9]);
-									if (_0x32acf3 !== -0x1 && this.settings.SVGKeys[_0x32acf3].shiftKey[0] === _0x491fc7.shiftKey[0]) {
-										delete this.allPrimaryKeyCodes[_0x32acf3];
-										delete this.settings.SVGKeys[_0x32acf3].keyCode[0];
-										delete this.settings.SVGKeys[_0x32acf3].shiftKey[0];
+					if (json.length > 0) {
+						json.forEach(function (key) {
+							const idx = this.getCodeIndex(key.code);
+							if (idx !== -1) {
+								for (let i = 0; i < 2; i += 1) {
+									let idx_alt = this.allPrimaryKeyCodes.indexOf(key.keyCode[i]);
+									if (idx_alt !== -1 && this.settings.SVGKeys[idx_alt].shiftKey[0] === key.shiftKey[0]) {
+										delete this.allPrimaryKeyCodes[idx_alt];
+										delete this.settings.SVGKeys[idx_alt].keyCode[0];
+										delete this.settings.SVGKeys[idx_alt].shiftKey[0];
 									}
-									_0x32acf3 = this.allAltKeyCodes.indexOf(_0x491fc7.keyCode[_0x4e70f9]);
-									if (_0x32acf3 !== -0x1 && this.settings.SVGKeys[_0x32acf3].shiftKey[0x1] === _0x491fc7.shiftKey[0x1]) {
-										delete this.allAltKeyCodes[_0x32acf3];
-										delete this.settings.SVGKeys[_0x32acf3].keyCode[0x1];
-										delete this.settings.SVGKeys[_0x32acf3].shiftKey[0x1];
+									idx_alt = this.allAltKeyCodes.indexOf(key.keyCode[i]);
+									if (idx_alt !== -1 && this.settings.SVGKeys[idx_alt].shiftKey[1] === key.shiftKey[1]) {
+										delete this.allAltKeyCodes[idx_alt];
+										delete this.settings.SVGKeys[idx_alt].keyCode[1];
+										delete this.settings.SVGKeys[idx_alt].shiftKey[1];
 									}
 								}
-								this.settings.SVGKeys[_0x1b6567].keyCode = _0x491fc7.keyCode;
-								this.allPrimaryKeyCodes[_0x1b6567] = _0x491fc7.keyCode[0];
-								this.allAltKeyCodes[_0x1b6567] = _0x491fc7.keyCode[0x1];
-								this.settings.SVGKeys[_0x1b6567].shiftKey = _0x491fc7.shiftKey;
+								this.settings.SVGKeys[idx].keyCode = key.keyCode;
+								this.allPrimaryKeyCodes[idx] = key.keyCode[0];
+								this.allAltKeyCodes[idx] = key.keyCode[1];
+								this.settings.SVGKeys[idx].shiftKey = key.shiftKey;
 							}
-						}, _0x2fbd9c);
-						_0x2fbd9c.settings.SVGKeys.forEach(function (_0x42fd18) {
-							if (!_0x42fd18.keyCode[0] && !_0x42fd18.keyCode[0x1]) {
-								throw new Error("The key " + _0x42fd18.SVGKey + " doesn't have a keyboard code associated.");
+						}, svgkeys);
+						svgkeys.settings.SVGKeys.forEach(function (key) {
+							if (!key.keyCode[0] && !key.keyCode[1]) {
+								throw new Error("The key " + key.SVGKey + " doesn't have a keyboard code associated.");
 							}
 						});
 					}
 				} else {
-					_0x2fbd9c = undefined;
-					if (_0x461daf.status === 0x194) {
+					svgkeys = undefined;
+					if (request.status === 404) {
 						throw new Error(error_strings.ERROR_SERVER_CONNECTION_OR_KEY_MAPPING_NA);
 					}
 				}
-				_0x16472c = undefined;
-				_0x2fbd9c = undefined;
+				json = undefined;
+				svgkeys = undefined;
 			};
 			try {
-				_0x461daf.send(undefined);
-			} catch (_0x443646) {
-				throw new Error(_0x443646.message);
+				request.send(undefined);
+			} catch (e) {
+				throw new Error(e.message);
 			}
 		} else {
 			throw new Error(error_strings.ERROR_EXT_FOR_KEYMAPPING + this.keyMappingFileExtension);
 		}
 		return true;
 	}
-	["disableKeys"](_0x391553) {
-		return new Promise((_0x138b81, _0x342f1b) => {
-			const _0x34633e = typeof _0x391553;
+	disableKeys(key_arr) {
+		return new Promise((resolve, reject) => {
+			const arr_type = typeof key_arr;
 			if (!this.isHidden()) {
-				if (_0x34633e === "string") {
-					this.readDisableKeyFile(_0x391553).then(() => {
-						_0x138b81();
+				if (arr_type === "string") {
+					this.readDisableKeyFile(key_arr).then(() => {
+						resolve();
 					}, () => {
-						_0x342f1b();
+						reject();
 					});
-				} else if (_0x34633e === "object") {
-					this.disableKeysAPI(_0x391553);
-					_0x138b81();
+				} else if (arr_type === "object") {
+					this.disableKeysAPI(key_arr);
+					resolve();
 				} else {
-					_0x342f1b();
+					reject();
 				}
 			} else {
 				throw new Error(error_strings.ERROR_EMU_HIDDEN_KEYS_DISABLED);
 			}
 		});
 	}
-	["disableKeysAPI"](_0x338cb8) {
-		if (_0x338cb8.keys && _0x338cb8.hasOwnProperty("secondKeys") && _0x338cb8.hasOwnProperty("alphaKeys") && _0x338cb8.keys instanceof Array && _0x338cb8.secondKeys instanceof Array && _0x338cb8.alphaKeys instanceof Array) {
-			const _0xcb9b9 = function (_0x49e89a) {
-				const _0x53ab39 = this.getCodeIndex(_0x49e89a);
-				if (_0x53ab39 !== _0x4195f0) {
-					return this.allKeys[_0x53ab39];
+	disableKeysAPI(key_arr) {
+		if (key_arr.keys && key_arr.hasOwnProperty("secondKeys") && key_arr.hasOwnProperty("alphaKeys") && key_arr.keys instanceof Array && key_arr.secondKeys instanceof Array && key_arr.alphaKeys instanceof Array) {
+			const get_keycode = function (keycode) {
+				const idx = this.getCodeIndex(keycode);
+				if (idx !== -1) {
+					return this.allKeys[idx];
 				}
 				throw new Error(error_strings.ERROR_INVALID_KEY_CONFIGURATION_FILE);
 			};
-			this.disabledKeys = _0x338cb8.keys.map(_0xcb9b9, this);
-			this.disabled2ndKeys = _0x338cb8.secondKeys.map(_0xcb9b9, this);
-			this.disabledAlphaKeys = _0x338cb8.alphaKeys.map(_0xcb9b9, this);
+			this.disabledKeys = key_arr.keys.map(get_keycode, this);
+			this.disabled2ndKeys = key_arr.secondKeys.map(get_keycode, this);
+			this.disabledAlphaKeys = key_arr.alphaKeys.map(get_keycode, this);
 			this.toggleEnableKeyButtons(this.allKeys, true);
 			if (this.calcMode !== asic.KeypadMetaState.SECOND && this.calcMode !== asic.KeypadMetaState.ALPHA) {
 				this.toggleEnableKeyButtons(this.disabledKeys, false);
@@ -698,35 +698,35 @@ class GenericKeypad {
 			}
 		}
 	}
-	["readDisableKeyFile"](_0x5bbe0b) {
-		return new Promise((_0x4f3047, _0x358be9) => {
-			_0x5bbe0b = _0x5bbe0b.trim();
-			const _0x4930ff = window.location.host;
-			const _0xc9bf6d = _0x5bbe0b.split("/");
-			if (_0x5bbe0b.indexOf("http://") === 0 || _0x5bbe0b.indexOf("https://") === 0) {
-				if (_0x5bbe0b.split(".").pop() === "json") {
-					if (_0xc9bf6d[0x2] === _0x4930ff) {
-						const _0x1771a2 = new XMLHttpRequest();
-						let _0x179f5f = this;
-						_0x1771a2.addEventListener("load", function () {
-							if (_0x1771a2.status === 0xc8) {
+	readDisableKeyFile(url) {
+		return new Promise((resolve, reject) => {
+			url = url.trim();
+			const host = window.location.host;
+			const url_s = url.split("/");
+			if (url.indexOf("http://") === 0 || url.indexOf("https://") === 0) {
+				if (url.split(".").pop() === "json") {
+					if (url_s[2] === host) {
+						const request = new XMLHttpRequest();
+						let this_ = this;
+						request.addEventListener("load", function () {
+							if (request.status === 200) {
 								try {
-									const _0x508078 = JSON.parse(_0x1771a2.responseText);
-									_0x179f5f.disableKeysAPI(_0x508078);
-								} catch (_0x3f935c) {
-									_0x179f5f.enableAllKeys();
-									_0x179f5f = undefined;
+									const json = JSON.parse(request.responseText);
+									this_.disableKeysAPI(json);
+								} catch (e) {
+									this_.enableAllKeys();
+									this_ = undefined;
 									throw new Error(error_strings.ERROR_INVALID_KEY_CONFIGURATION_FILE);
 								}
-								_0x179f5f = undefined;
-								_0x4f3047();
+								this_ = undefined;
+								resolve();
 							} else {
-								_0x179f5f = undefined;
+								this_ = undefined;
 								throw new Error(error_strings.ERROR_SERVER_CONNECTION_OR_KEY_MAPPING_NA);
 							}
 						});
-						_0x1771a2.open("GET", _0x5bbe0b + "?r=" + Math.random(), false);
-						_0x1771a2.send();
+						request.open("GET", url + "?r=" + Math.random(), false);
+						request.send();
 					} else {
 						throw new Error(error_strings.ERROR_FILE_NA_IN_SERVER);
 					}
@@ -738,7 +738,7 @@ class GenericKeypad {
 			}
 		});
 	}
-	["enableAllKeys"]() {
+	enableAllKeys() {
 		if (!this.isHidden()) {
 			this.disabledKeys.length = 0;
 			this.disabled2ndKeys.length = 0;
@@ -748,146 +748,148 @@ class GenericKeypad {
 			throw new Error(error_strings.ERROR_EMU_HIDDEN_KEYS_ENABLED);
 		}
 	}
-	["disableAllKeys"]() {
+	disableAllKeys() {
 		if (!this.isHidden()) {
 			this.toggleEnableKeyButtons(this.allKeys, false);
 		} else {
 			throw new Error(error_strings.ERROR_EMU_HIDDEN_KEYS_DISABLED);
 		}
 	}
-	["getMetaState"]() {
+	getMetaState() {
 		return this.asic.getKeypadMetaState();
 	}
-	["updateDisabledKeys"]() {
-		this.getMetaState().then(_0x26ccbd => {
+	updateDisabledKeys() {
+		this.getMetaState().then(mode => {
 			if (!this.isHidden()) {
-				if (this.calcMode !== _0x26ccbd) {
+				if (this.calcMode !== mode) {
 					this.toggleEnableKeyButtons(this.currentDisabledKeys, true);
-					if (_0x26ccbd === asic.KeypadMetaState.SECOND) {
+					if (mode === asic.KeypadMetaState.SECOND) {
 						this.toggleEnableKeyButtons(this.disabled2ndKeys, false);
-					} else if (_0x26ccbd === asic.KeypadMetaState.ALPHA) {
+					} else if (mode === asic.KeypadMetaState.ALPHA) {
 						this.toggleEnableKeyButtons(this.disabledAlphaKeys, false);
 					} else {
 						this.toggleEnableKeyButtons(this.disabledKeys, false);
 					}
-					this.calcMode = _0x26ccbd;
+					this.calcMode = mode;
 				}
 			}
 		});
 	}
-	["setKey"](_0x1bb147) {
-		return this.asic.keyDown(_0x1bb147);
+	setKey(key) {
+		return this.asic.keyDown(key);
 	}
-	["setKeySVG"](_0x493495) {
-		let _0x6df6ab = 0;
-		_0x6df6ab = this.allCodes[this.allKeys.indexOf(_0x493495)];
-		return this.setKey(_0x6df6ab);
+	setKeySVG(key) {
+		let keycode = 0;
+		keycode = this.allCodes[this.allKeys.indexOf(key)];
+		return this.setKey(keycode);
 	}
-	["releaseKey"](_0x2755e9) {
-		return this.asic.keyUp(_0x2755e9);
+	releaseKey(key) {
+		return this.asic.keyUp(key);
 	}
-	["acceptInput"](_0x43adb4) {
-		this.shouldAcceptInput = _0x43adb4;
+	acceptInput(on) {
+		this.shouldAcceptInput = on;
 	}
-	["getAcceptInput"]() {
+	getAcceptInput() {
 		return this.shouldAcceptInput;
 	}
-	["switchTheme"](_0x507f1f, _0x1f8126) {
-		if (!/[^a-z\d]/i.test(_0x507f1f)) {
-			const _0x2b8ed9 = document.getElementById(_0x1f8126);
-			const _0x3e17dc = document.getElementById("display");
-			utilities.Utilities.removePrefixedClass(_0x3e17dc, "ti_theme_");
-			utilities.Utilities.removePrefixedClass(_0x2b8ed9, "ti_theme_");
-			if (_0x507f1f !== undefined && _0x507f1f !== '') {
-				_0x507f1f = "ti_theme_" + _0x507f1f;
-				utilities.Utilities.addClass(_0x2b8ed9, _0x507f1f);
-				utilities.Utilities.addClass(_0x3e17dc, _0x507f1f);
+	switchTheme(theme, id) {
+		if (!/[^a-z\d]/i.test(theme)) {
+			const element = document.getElementById(id);
+			const display = document.getElementById("display");
+			utilities.Utilities.removePrefixedClass(display, "ti_theme_");
+			utilities.Utilities.removePrefixedClass(element, "ti_theme_");
+			if (theme !== undefined && theme !== '') {
+				theme = "ti_theme_" + theme;
+				utilities.Utilities.addClass(element, theme);
+				utilities.Utilities.addClass(display, theme);
 			}
 		}
 	}
-	["isHidden"]() {
-		let _0x32e0c7 = true;
-		const _0x157645 = document.getElementById(this.divId);
-		const _0x49f1bb = window.getComputedStyle(_0x157645);
-		if (_0x49f1bb.display !== "none") {
-			if (_0x49f1bb.visibility !== "hidden") {
-				_0x32e0c7 = false;
+	isHidden() {
+		let hidden = true;
+		const element = document.getElementById(this.divId);
+		const style = window.getComputedStyle(element);
+		if (style.display !== "none") {
+			if (style.visibility !== "hidden") {
+				hidden = false;
 			}
 		}
-		return _0x32e0c7;
+		return hidden;
 	}
 }
 exports.GenericKeypad = GenericKeypad;
-var _0x112407;
-(function (_0x339e48) {
-	_0x339e48[_0x339e48.KeyDown = 0] = "KeyDown";
-	_0x339e48[_0x339e48.KeyUp   = 1] = "KeyUp";
-})(_0x112407 || (_0x112407 = {}));
-class _0x420e5a {
-	constructor(_0x1d1804, _0x54c7bb) {
-		this.eventType = _0x1d1804;
-		this.keyCode = _0x54c7bb;
+
+var a;
+(function (key) {
+	key[key.KeyDown = 0] = "KeyDown";
+	key[key.KeyUp   = 1] = "KeyUp";
+})(a || (a = {}));
+class keyevent {
+	constructor(type, keycode) {
+		this.eventType = type;
+		this.keyCode = keycode;
 	}
-	["getEventType"]() {
+	getEventType() {
 		return this.eventType;
 	}
-	["getKeyCode"]() {
+	getKeyCode() {
 		return this.keyCode;
 	}
 }
+
 class KeyEventProcessor {
 	constructor() {
 		this.keyCurrentlyHeldDown = 0;
 		this.potentialAutoRepeatKeyCode = 0;
-		this.autoRepeatTimer = -0x1;
-		this.autoRepeatInterval = 0x1f4;
+		this.autoRepeatTimer = -1;
+		this.autoRepeatInterval = 500;
 		this.clearQueue();
 	}
-	["clearQueue"]() {
+	clearQueue() {
 		this.keyEvents = [];
 	}
-	["isQueueEmpty"]() {
+	isQueueEmpty() {
 		return this.keyEvents.length === 0;
 	}
-	["isPotentialAutoRepeat"]() {
+	isPotentialAutoRepeat() {
 		return this.potentialAutoRepeatKeyCode !== 0;
 	}
-	["addKeyDown"](_0x15324d) {
-		this.keyEvents.push(new _0x420e5a(_0x112407.KeyDown, _0x15324d));
+	addKeyDown(keycode) {
+		this.keyEvents.push(new keyevent(a.KeyDown, keycode));
 	}
-	["addKeyUp"](_0xbb3a99) {
-		this.keyEvents.push(new _0x420e5a(_0x112407.KeyUp, _0xbb3a99));
+	addKeyUp(keycode) {
+		this.keyEvents.push(new keyevent(a.KeyUp, keycode));
 	}
-	["getNextKeyCode"]() {
-		let _0x4e4d3c = this.keyEvents.shift();
-		let _0x154320 = 0;
-		if (_0x4e4d3c !== undefined) {
-			_0x154320 = _0x4e4d3c.getKeyCode();
-			if (_0x4e4d3c.getEventType() === _0x112407.KeyUp) {
+	getNextKeyCode() {
+		let keyevent = this.keyEvents.shift();
+		let keycode = 0;
+		if (keyevent !== undefined) {
+			keycode = keyevent.getKeyCode();
+			if (keyevent.getEventType() === a.KeyUp) {
 				this.keyCurrentlyHeldDown = 0;
-				this.autoRepeatInterval = 0x1f4;
-				_0x4e4d3c = this.keyEvents.shift();
-				_0x154320 = 0;
-				if (_0x4e4d3c !== undefined) {
-					if (_0x4e4d3c.getEventType() !== _0x112407.KeyDown) {
+				this.autoRepeatInterval = 500;
+				keyevent = this.keyEvents.shift();
+				keycode = 0;
+				if (keyevent !== undefined) {
+					if (keyevent.getEventType() !== a.KeyDown) {
 						console.log("ERROR: Why is there a keyUp after a keyUp!");
 					} else {
-						_0x154320 = _0x4e4d3c.getKeyCode();
+						keycode = keyevent.getKeyCode();
 					}
-					if (_0x154320 !== 0) {
-						this.keyCurrentlyHeldDown = _0x154320;
+					if (keycode !== 0) {
+						this.keyCurrentlyHeldDown = keycode;
 					}
 				}
-			} else if (_0x154320 !== 0) {
-				this.keyCurrentlyHeldDown = _0x154320;
+			} else if (keycode !== 0) {
+				this.keyCurrentlyHeldDown = keycode;
 			}
 		}
-		return _0x154320;
+		return keycode;
 	}
-	["notifyKeyCanRepeat"]() {
+	notifyKeyCanRepeat() {
 		if (this.keyCurrentlyHeldDown !== 0) {
 			this.potentialAutoRepeatKeyCode = this.keyCurrentlyHeldDown;
-			if (this.autoRepeatTimer !== -0x1) {
+			if (this.autoRepeatTimer !== -1) {
 				window.clearTimeout(this.autoRepeatTimer);
 			}
 			this.autoRepeatTimer = window.setTimeout(() => {
@@ -896,15 +898,15 @@ class KeyEventProcessor {
 				}
 				this.potentialAutoRepeatKeyCode = 0;
 			}, this.autoRepeatInterval);
-			this.autoRepeatInterval = 0x7d;
+			this.autoRepeatInterval = 125;
 		}
 	}
-	["isKeyUpInQueue"]() {
+	isKeyUpInQueue() {
 		if (this.keyEvents.length === 0) {
 			return false;
 		} else {
-			for (const _0x27ff01 of this.keyEvents) {
-				if (_0x27ff01.getEventType() === _0x112407.KeyUp) {
+			for (const keyevent of this.keyEvents) {
+				if (keyevent.getEventType() === a.KeyUp) {
 					return true;
 				}
 			}

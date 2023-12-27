@@ -349,253 +349,253 @@ class mcu {
 		this.operation[0xfe9f] = this.use_DSR;
 		this.operation[0xf00c] = this.lea_obj;
 		this.operation[0xffff] = this.brk;
-		this.operation[0xfe2f] = function (exports, operand) { // INC [EA]
-			let old_ea_val = exports.dataMemory.get8(exports.dsr, exports.ea);
+		this.operation[0xfe2f] = function (mcu, operand) { // INC [EA]
+			let old_ea_val = mcu.dataMemory.get8(mcu.dsr, mcu.ea);
 			let new_ea_val = old_ea_val + 0x1 & 0xff;
-			new_ea_val = exports.setFlagsFor8bitInc(exports, old_ea_val, 0x1, new_ea_val);
-			exports.dataMemory.set8(exports.dsr, new_ea_val, exports.ea);
+			new_ea_val = mcu.setFlagsFor8bitInc(mcu, old_ea_val, 0x1, new_ea_val);
+			mcu.dataMemory.set8(mcu.dsr, new_ea_val, mcu.ea);
 		};
-		this.operation[0xfe3f] = function (exports, operand) { // DEC [EA]
-			let old_ea_val = exports.dataMemory.get8(exports.dsr, exports.ea);
+		this.operation[0xfe3f] = function (mcu, operand) { // DEC [EA]
+			let old_ea_val = mcu.dataMemory.get8(mcu.dsr, mcu.ea);
 			let new_ea_val = old_ea_val - 0x1;
-			new_ea_val = exports.setFlagsFor8bitDec(exports, old_ea_val, 0x1, new_ea_val);
-			exports.dataMemory.set8(exports.dsr, new_ea_val, exports.ea);
+			new_ea_val = mcu.setFlagsFor8bitDec(mcu, old_ea_val, 0x1, new_ea_val);
+			mcu.dataMemory.set8(mcu.dsr, new_ea_val, mcu.ea);
 		};
-		this.operation[0xfe8f] = function (exports, operand) {}; // NOP
-		this.operation[0xed08] = function (exports, _0x2bd513) {  // EI
-			exports.psw |= exports.NXU16_MASK_MIE_FLAG;
-			exports.pendingEI++;
+		this.operation[0xfe8f] = function (mcu, operand) {}; // NOP
+		this.operation[0xed08] = function (mcu, _0x2bd513) {  // EI
+			mcu.psw |= mcu.NXU16_MASK_MIE_FLAG;
+			mcu.pendingEI++;
 		};
-		this.operation[0xed80] = function (exports, operand) { // SC
-			exports.psw |= exports.NXU16_MASK_C_FLAG;
+		this.operation[0xed80] = function (mcu, operand) { // SC
+			mcu.psw |= mcu.NXU16_MASK_C_FLAG;
 		};
-		this.operation[0xeb7f] = function (exports, operand) { // RC
-			exports.psw &= ~exports.NXU16_MASK_C_FLAG;
+		this.operation[0xeb7f] = function (mcu, operand) { // RC
+			mcu.psw &= ~mcu.NXU16_MASK_C_FLAG;
 		};
-		this.operation[0xebf7] = function (exports, operand) { // DI
-			exports.psw &= ~exports.NXU16_MASK_MIE_FLAG;
+		this.operation[0xebf7] = function (mcu, operand) { // DI
+			mcu.psw &= ~mcu.NXU16_MASK_MIE_FLAG;
 		};
-		this.operation[0xfecf] = function (exports, operand) { // CPLC
-			if ((exports.psw & exports.NXU16_MASK_C_FLAG) === 0) {
-				exports.psw |= exports.NXU16_MASK_C_FLAG;
+		this.operation[0xfecf] = function (mcu, operand) { // CPLC
+			if ((mcu.psw & mcu.NXU16_MASK_C_FLAG) === 0) {
+				mcu.psw |= mcu.NXU16_MASK_C_FLAG;
 			} else {
-				exports.psw &= ~exports.NXU16_MASK_C_FLAG;
+				mcu.psw &= ~mcu.NXU16_MASK_C_FLAG;
 			}
 		};
-		this.operation[0xfe0f] = function (exports, operand) { // RTI
-			exports.ecsr = exports.getECSRForELevel(exports);
-			exports.pc = exports.ecsr << 16 | exports.getELRForELevel(exports);
-			exports.psw = exports.getEPSWForELevel(exports);
+		this.operation[0xfe0f] = function (mcu, operand) { // RTI
+			mcu.ecsr = mcu.getECSRForELevel(mcu);
+			mcu.pc = mcu.ecsr << 16 | mcu.getELRForELevel(mcu);
+			mcu.psw = mcu.getEPSWForELevel(mcu);
 		};
-		this.operation[0xfe1f] = function (exports, operand) { // RT
-			exports.ecsr = exports.lcsr;
-			exports.pc = exports.ecsr << 16 | exports.lr;
+		this.operation[0xfe1f] = function (mcu, operand) { // RT
+			mcu.ecsr = mcu.lcsr;
+			mcu.pc = mcu.ecsr << 16 | mcu.lr;
 		};
 		if (_0x102e32 && _0x102e32.parent) {
 			this.parent = _0x102e32.parent;
 		}
 		this.isBusy = true;
 	}
-	getStack(exports) {
+	getStack(mcu) {
 		let stack = [];
-		for (let i = -1; i < 0xa; i++) {
-			stack.push(exports.dataMemory.get16(0, exports.sp + 0x2 * i).toString(0x10));
+		for (let i = -1; i < 10; i++) {
+			stack.push(mcu.dataMemory.get16(0, mcu.sp + 2 * i).toString(16));
 		}
 		return "Stack contents:  + stack.join(", ") + ";
 	}
-	initialize(exports) {
-		this.codeMemory.setData(exports);
-		this.dataMemory.setData(exports);
+	initialize(size) {
+		this.codeMemory.setData(size);
+		this.dataMemory.setData(size);
 		this.resetAll(this);
 		this.dataMemory.resetRegisters();
 		this.sp = this.codeMemory.get16(0);
-		this.pc = this.codeMemory.get16(0x2);
+		this.pc = this.codeMemory.get16(2);
 	}
-	resetAll(exports) {
-		exports.r0 = 0;
-		exports.r1 = 0;
-		exports.r2 = 0;
-		exports.r3 = 0;
-		exports.r4 = 0;
-		exports.r5 = 0;
-		exports.r6 = 0;
-		exports.r7 = 0;
-		exports.r8 = 0;
-		exports.r9 = 0;
-		exports.r10 = 0;
-		exports.r11 = 0;
-		exports.r12 = 0;
-		exports.r13 = 0;
-		exports.r14 = 0;
-		exports.r15 = 0;
-		exports.psw = 0;
-		exports.psw1 = 0;
-		exports.psw2 = 0;
-		exports.psw3 = 0;
-		exports.ea = 0;
-		exports.pc = 0;
-		exports.sp = 0;
-		exports.dsr = 0;
-		exports.currentDSR = 0;
-		exports.ecsr = 0;
-		exports.lcsr = 0;
-		exports.ecsr1 = 0;
-		exports.ecsr2 = 0;
-		exports.ecsr3 = 0;
-		exports.lr = 0;
-		exports.elr1 = 0;
-		exports.elr2 = 0;
-		exports.elr3 = 0;
-		exports.pendingEI = 0;
+	resetAll(mcu) {
+		mcu.r0 = 0;
+		mcu.r1 = 0;
+		mcu.r2 = 0;
+		mcu.r3 = 0;
+		mcu.r4 = 0;
+		mcu.r5 = 0;
+		mcu.r6 = 0;
+		mcu.r7 = 0;
+		mcu.r8 = 0;
+		mcu.r9 = 0;
+		mcu.r10 = 0;
+		mcu.r11 = 0;
+		mcu.r12 = 0;
+		mcu.r13 = 0;
+		mcu.r14 = 0;
+		mcu.r15 = 0;
+		mcu.psw = 0;
+		mcu.psw1 = 0;
+		mcu.psw2 = 0;
+		mcu.psw3 = 0;
+		mcu.ea = 0;
+		mcu.pc = 0;
+		mcu.sp = 0;
+		mcu.dsr = 0;
+		mcu.currentDSR = 0;
+		mcu.ecsr = 0;
+		mcu.lcsr = 0;
+		mcu.ecsr1 = 0;
+		mcu.ecsr2 = 0;
+		mcu.ecsr3 = 0;
+		mcu.lr = 0;
+		mcu.elr1 = 0;
+		mcu.elr2 = 0;
+		mcu.elr3 = 0;
+		mcu.pendingEI = 0;
 	}
-	isCSet(exports) {
-		return (exports.psw & exports.NXU16_MASK_C_FLAG) !== 0;
+	isCSet(mcu) {
+		return (mcu.psw & mcu.NXU16_MASK_C_FLAG) !== 0;
 	}
-	setC(exports, bit) {
+	setC(mcu, bit) {
 		if (bit) {
-			exports.psw |= exports.NXU16_MASK_C_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_C_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_C_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_C_FLAG;
 		}
 	}
-	isZSet(exports) {
-		return (exports.psw & exports.NXU16_MASK_Z_FLAG) !== 0;
+	isZSet(mcu) {
+		return (mcu.psw & mcu.NXU16_MASK_Z_FLAG) !== 0;
 	}
-	setZ(exports, bit) {
+	setZ(mcu, bit) {
 		if (bit) {
-			exports.psw |= exports.NXU16_MASK_Z_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_Z_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_Z_FLAG;
 		}
 	}
-	isSSet(exports) {
-		return (exports.psw & exports.NXU16_MASK_S_FLAG) !== 0;
+	isSSet(mcu) {
+		return (mcu.psw & mcu.NXU16_MASK_S_FLAG) !== 0;
 	}
-	setS(exports, bit) {
+	setS(mcu, bit) {
 		if (bit) {
-			exports.psw |= exports.NXU16_MASK_S_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_S_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_S_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_S_FLAG;
 		}
 	}
-	isOVSet(exports) {
-		return (exports.psw & exports.NXU16_MASK_OV_FLAG) !== 0;
+	isOVSet(mcu) {
+		return (mcu.psw & mcu.NXU16_MASK_OV_FLAG) !== 0;
 	}
-	setOV(exports, bit) {
+	setOV(mcu, bit) {
 		if (bit) {
-			exports.psw |= exports.NXU16_MASK_OV_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_OV_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_OV_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_OV_FLAG;
 		}
 	}
-	isHCSet(exports) {
-		return (exports.psw & exports.NXU16_MASK_HC_FLAG) !== 0;
+	isHCSet(mcu) {
+		return (mcu.psw & mcu.NXU16_MASK_HC_FLAG) !== 0;
 	}
-	setHC(exports, bit) {
+	setHC(mcu, bit) {
 		if (bit) {
-			exports.psw |= exports.NXU16_MASK_HC_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_HC_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_HC_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_HC_FLAG;
 		}
 	}
-	isMIESet(exports) {
-		return (exports.psw & exports.NXU16_MASK_MIE_FLAG) !== 0;
+	isMIESet(mcu) {
+		return (mcu.psw & mcu.NXU16_MASK_MIE_FLAG) !== 0;
 	}
-	setMIE(exports, bit) {
+	setMIE(mcu, bit) {
 		if (bit) {
-			exports.psw |= exports.NXU16_MASK_MIE_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_MIE_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_MIE_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_MIE_FLAG;
 		}
 	}
-	getECSRForELevel(exports) {
-		switch (exports.psw & 0x3) {
+	getECSRForELevel(mcu) {
+		switch (mcu.psw & 3) {
 			case 0:
-				return exports.ecsr;
+				return mcu.ecsr;
 			case 1:
-				return exports.ecsr1;
+				return mcu.ecsr1;
 			case 2:
-				return exports.ecsr2;
+				return mcu.ecsr2;
 			case 3:
-				return exports.ecsr3;
+				return mcu.ecsr3;
 		}
 	}
-	setECSRForELevel(exports, val) {
-		switch (exports.psw & 0x3) {
+	setECSRForELevel(mcu, val) {
+		switch (mcu.psw & 3) {
 			case 0:
-				exports.ecsr = val;
-				break;
-			case 1:
-				exports.ecsr1 = val;
-				break;
-			case 2:
-				exports.ecsr2 = val;
-				break;
-			case 3:
-				exports.ecsr3 = val;
-				break;
-		}
-	}
-	getELRForELevel(exports) {
-		switch (exports.psw & 0x3) {
-			case 0:
-				return exports.lr;
-			case 1:
-				return exports.elr1;
-			case 2:
-				return exports.elr2;
-			case 3:
-				return exports.elr3;
-		}
-	}
-	setELRForELevel(exports, val) {
-		switch (exports.psw & 0x3) {
-			case 0:
-				exports.lr = val;
+				mcu.ecsr = val;
 				break;
 			case 1:
-				exports.elr1 = val;
+				mcu.ecsr1 = val;
 				break;
 			case 2:
-				exports.elr2 = val;
+				mcu.ecsr2 = val;
 				break;
 			case 3:
-				exports.elr3 = val;
+				mcu.ecsr3 = val;
 				break;
 		}
 	}
-	getEPSWForELevel(exports) {
-		switch (exports.psw & 0x3) {
+	getELRForELevel(mcu) {
+		switch (mcu.psw & 3) {
 			case 0:
-				return exports.psw;
+				return mcu.lr;
 			case 1:
-				return exports.psw1;
+				return mcu.elr1;
 			case 2:
-				return exports.psw2;
+				return mcu.elr2;
 			case 3:
-				return exports.psw3;
+				return mcu.elr3;
 		}
 	}
-	setEPSWForELevel(exports, val) {
-		switch (exports.psw & 0x3) {
+	setELRForELevel(mcu, val) {
+		switch (mcu.psw & 3) {
 			case 0:
-				exports.psw = val;
+				mcu.lr = val;
 				break;
 			case 1:
-				exports.psw1 = val;
+				mcu.elr1 = val;
 				break;
 			case 2:
-				exports.psw2 = val;
+				mcu.elr2 = val;
 				break;
 			case 3:
-				exports.psw3 = val;
+				mcu.elr3 = val;
 				break;
 		}
 	}
-	getInterruptHandlerAddress(exports, idx, enable) {
-		const dataMemory = exports.dataMemory;
-		var ie = dataMemory.get8(exports.dsr, dataMemory.INTERRUPT_IE0 + idx);
-		var irq = dataMemory.get8(exports.dsr, dataMemory.INTERRUPT_IRQ0 + idx);
+	getEPSWForELevel(mcu) {
+		switch (mcu.psw & 3) {
+			case 0:
+				return mcu.psw;
+			case 1:
+				return mcu.psw1;
+			case 2:
+				return mcu.psw2;
+			case 3:
+				return mcu.psw3;
+		}
+	}
+	setEPSWForELevel(mcu, val) {
+		switch (mcu.psw & 3) {
+			case 0:
+				mcu.psw = val;
+				break;
+			case 1:
+				mcu.psw1 = val;
+				break;
+			case 2:
+				mcu.psw2 = val;
+				break;
+			case 3:
+				mcu.psw3 = val;
+				break;
+		}
+	}
+	getInterruptHandlerAddress(mcu, idx, enable) {
+		const dataMemory = mcu.dataMemory;
+		var ie = dataMemory.get8(mcu.dsr, dataMemory.INTERRUPT_IE0 + idx);
+		var irq = dataMemory.get8(mcu.dsr, dataMemory.INTERRUPT_IRQ0 + idx);
 		var request = 0;
 		var i = 0;
 		if (idx === 0) {
@@ -614,543 +614,543 @@ class mcu {
 				break;
 			}
 		}
-		return exports.codeMemory.get16(2 * (8 * idx + i));
+		return mcu.codeMemory.get16(2 * (8 * idx + i));
 	}
-	get8BitRegister(exports, n) {
+	get8BitRegister(mcu, n) {
 		switch (n) {
 			case 0:
-				return exports.r0;
+				return mcu.r0;
 			case 1:
-				return exports.r1;
+				return mcu.r1;
 			case 2:
-				return exports.r2;
+				return mcu.r2;
 			case 3:
-				return exports.r3;
+				return mcu.r3;
 			case 4:
-				return exports.r4;
+				return mcu.r4;
 			case 5:
-				return exports.r5;
+				return mcu.r5;
 			case 6:
-				return exports.r6;
+				return mcu.r6;
 			case 7:
-				return exports.r7;
+				return mcu.r7;
 			case 8:
-				return exports.r8;
+				return mcu.r8;
 			case 9:
-				return exports.r9;
+				return mcu.r9;
 			case 10:
-				return exports.r10;
+				return mcu.r10;
 			case 11:
-				return exports.r11;
+				return mcu.r11;
 			case 12:
-				return exports.r12;
+				return mcu.r12;
 			case 13:
-				return exports.r13;
+				return mcu.r13;
 			case 14:
-				return exports.r14;
+				return mcu.r14;
 			case 15:
-				return exports.r15;
+				return mcu.r15;
 		}
 	}
-	get16BitRegister(exports, n) {
+	get16BitRegister(mcu, n) {
 		switch (n) {
 			case 0:
-				return exports.r0 | exports.r1 << 8;
+				return mcu.r0 | mcu.r1 << 8;
 			case 1:
-				return exports.r1 | exports.r2 << 8;
+				return mcu.r1 | mcu.r2 << 8;
 			case 2:
-				return exports.r2 | exports.r3 << 8;
+				return mcu.r2 | mcu.r3 << 8;
 			case 3:
-				return exports.r3 | exports.r4 << 8;
+				return mcu.r3 | mcu.r4 << 8;
 			case 4:
-				return exports.r4 | exports.r5 << 8;
+				return mcu.r4 | mcu.r5 << 8;
 			case 5:
-				return exports.r5 | exports.r6 << 8;
+				return mcu.r5 | mcu.r6 << 8;
 			case 6:
-				return exports.r6 | exports.r7 << 8;
+				return mcu.r6 | mcu.r7 << 8;
 			case 7:
-				return exports.r7 | exports.r8 << 8;
+				return mcu.r7 | mcu.r8 << 8;
 			case 8:
-				return exports.r8 | exports.r9 << 8;
+				return mcu.r8 | mcu.r9 << 8;
 			case 9:
-				return exports.r9 | exports.r10 << 8;
+				return mcu.r9 | mcu.r10 << 8;
 			case 10:
-				return exports.r10 | exports.r11 << 8;
+				return mcu.r10 | mcu.r11 << 8;
 			case 11:
-				return exports.r11 | exports.r12 << 8;
+				return mcu.r11 | mcu.r12 << 8;
 			case 12:
-				return exports.r12 | exports.r13 << 8;
+				return mcu.r12 | mcu.r13 << 8;
 			case 13:
-				return exports.r13 | exports.r14 << 8;
+				return mcu.r13 | mcu.r14 << 8;
 			case 14:
-				return exports.r14 | exports.r15 << 8;
+				return mcu.r14 | mcu.r15 << 8;
 			case 15:
-				return exports.r15 | exports.r0 << 8;
+				return mcu.r15 | mcu.r0 << 8;
 		}
 	}
-	get32BitRegister(exports, n) {
+	get32BitRegister(mcu, n) {
 		switch (n) {
 			case 0:
-				return exports.r0 | exports.r1 << 8 | exports.r2 << 16 | exports.r3 << 24;
+				return mcu.r0 | mcu.r1 << 8 | mcu.r2 << 16 | mcu.r3 << 24;
 			case 4:
-				return exports.r4 | exports.r5 << 8 | exports.r6 << 16 | exports.r7 << 24;
+				return mcu.r4 | mcu.r5 << 8 | mcu.r6 << 16 | mcu.r7 << 24;
 			case 8:
-				return exports.r8 | exports.r9 << 8 | exports.r10 << 16 | exports.r11 << 24;
+				return mcu.r8 | mcu.r9 << 8 | mcu.r10 << 16 | mcu.r11 << 24;
 			case 12:
-				return exports.r12 | exports.r13 << 8 | exports.r14 << 16 | exports.r15 << 24;
+				return mcu.r12 | mcu.r13 << 8 | mcu.r14 << 16 | mcu.r15 << 24;
 				;
 		}
 	}
-	get64BitRegister(exports, n) {
+	get64BitRegister(mcu, n) {
 		let int32_0;
 		let int32_1;
 		switch (n) {
 			case 0:
-				int32_0 = exports.r0 | exports.r1 << 8 | exports.r2 << 16 | exports.r3 << 24;
-				int32_1 = exports.r4 | exports.r5 << 8 | exports.r6 << 16 | exports.r7 << 24;
+				int32_0 = mcu.r0 | mcu.r1 << 8 | mcu.r2 << 16 | mcu.r3 << 24;
+				int32_1 = mcu.r4 | mcu.r5 << 8 | mcu.r6 << 16 | mcu.r7 << 24;
 				break;
 			case 8:
-				int32_0 = exports.r8 | exports.r9 << 8 | exports.r10 << 16 | exports.r11 << 24;
-				int32_1 = exports.r12 | exports.r13 << 8 | exports.r14 << 16 | exports.r15 << 24;
+				int32_0 = mcu.r8 | mcu.r9 << 8 | mcu.r10 << 16 | mcu.r11 << 24;
+				int32_1 = mcu.r12 | mcu.r13 << 8 | mcu.r14 << 16 | mcu.r15 << 24;
 				break;
 		}
 		return [int32_0, int32_1];
 	}
-	get16BitRegisterReverse(exports, n) {
+	get16BitRegisterReverse(mcu, n) {
 		switch (n) {
 			case 0:
-				return exports.r15 | exports.r0 << 8;
+				return mcu.r15 | mcu.r0 << 8;
 			case 0x1:
-				return exports.r0 | exports.r1 << 8;
+				return mcu.r0 | mcu.r1 << 8;
 			case 0x2:
-				return exports.r1 | exports.r2 << 8;
+				return mcu.r1 | mcu.r2 << 8;
 			case 0x3:
-				return exports.r2 | exports.r3 << 8;
+				return mcu.r2 | mcu.r3 << 8;
 			case 0x4:
-				return exports.r3 | exports.r4 << 8;
+				return mcu.r3 | mcu.r4 << 8;
 			case 0x5:
-				return exports.r4 | exports.r5 << 8;
+				return mcu.r4 | mcu.r5 << 8;
 			case 0x6:
-				return exports.r5 | exports.r6 << 8;
+				return mcu.r5 | mcu.r6 << 8;
 			case 0x7:
-				return exports.r6 | exports.r7 << 8;
+				return mcu.r6 | mcu.r7 << 8;
 			case 0x8:
-				return exports.r7 | exports.r8 << 8;
+				return mcu.r7 | mcu.r8 << 8;
 			case 0x9:
-				return exports.r8 | exports.r9 << 8;
+				return mcu.r8 | mcu.r9 << 8;
 			case 0xa:
-				return exports.r9 | exports.r10 << 8;
+				return mcu.r9 | mcu.r10 << 8;
 			case 0xb:
-				return exports.r10 | exports.r11 << 8;
+				return mcu.r10 | mcu.r11 << 8;
 			case 0xc:
-				return exports.r11 | exports.r12 << 8;
+				return mcu.r11 | mcu.r12 << 8;
 			case 0xd:
-				return exports.r12 | exports.r13 << 8;
+				return mcu.r12 | mcu.r13 << 8;
 			case 0xe:
-				return exports.r13 | exports.r14 << 8;
+				return mcu.r13 | mcu.r14 << 8;
 			case 0xf:
-				return exports.r14 | exports.r15 << 8;
+				return mcu.r14 | mcu.r15 << 8;
 		}
 	}
-	setOperationResult8bit(exports, n, result) {
+	setOperationResult8bit(mcu, n, result) {
 		switch (n) {
 			case 0:
-				exports.r0 = result;
+				mcu.r0 = result;
 				break;
 			case 1:
-				exports.r1 = result;
+				mcu.r1 = result;
 				break;
 			case 2:
-				exports.r2 = result;
+				mcu.r2 = result;
 				break;
 			case 3:
-				exports.r3 = result;
+				mcu.r3 = result;
 				break;
 			case 4:
-				exports.r4 = result;
+				mcu.r4 = result;
 				break;
 			case 5:
-				exports.r5 = result;
+				mcu.r5 = result;
 				break;
 			case 6:
-				exports.r6 = result;
+				mcu.r6 = result;
 				break;
 			case 7:
-				exports.r7 = result;
+				mcu.r7 = result;
 				break;
 			case 8:
-				exports.r8 = result;
+				mcu.r8 = result;
 				break;
 			case 9:
-				exports.r9 = result;
+				mcu.r9 = result;
 				break;
 			case 10:
-				exports.r10 = result;
+				mcu.r10 = result;
 				break;
 			case 11:
-				exports.r11 = result;
+				mcu.r11 = result;
 				break;
 			case 12:
-				exports.r12 = result;
+				mcu.r12 = result;
 				break;
 			case 13:
-				exports.r13 = result;
+				mcu.r13 = result;
 				break;
 			case 14:
-				exports.r14 = result;
+				mcu.r14 = result;
 				break;
 			case 15:
-				exports.r15 = result;
+				mcu.r15 = result;
 				break;
 		}
 	}
-	setOperationResult16bit(exports, n, result) {
+	setOperationResult16bit(mcu, n, result) {
 		switch (n) {
 			case 0:
-				exports.r0 = result & 0xff;
-				exports.r1 = result >> 8 & 0xff;
+				mcu.r0 = result & 0xff;
+				mcu.r1 = result >> 8 & 0xff;
 				break;
 			case 2:
-				exports.r2 = result & 0xff;
-				exports.r3 = result >> 8 & 0xff;
+				mcu.r2 = result & 0xff;
+				mcu.r3 = result >> 8 & 0xff;
 				break;
 			case 4:
-				exports.r4 = result & 0xff;
-				exports.r5 = result >> 8 & 0xff;
+				mcu.r4 = result & 0xff;
+				mcu.r5 = result >> 8 & 0xff;
 				break;
 			case 6:
-				exports.r6 = result & 0xff;
-				exports.r7 = result >> 8 & 0xff;
+				mcu.r6 = result & 0xff;
+				mcu.r7 = result >> 8 & 0xff;
 				break;
 			case 8:
-				exports.r8 = result & 0xff;
-				exports.r9 = result >> 8 & 0xff;
+				mcu.r8 = result & 0xff;
+				mcu.r9 = result >> 8 & 0xff;
 				break;
 			case 0xa:
-				exports.r10 = result & 0xff;
-				exports.r11 = result >> 8 & 0xff;
+				mcu.r10 = result & 0xff;
+				mcu.r11 = result >> 8 & 0xff;
 				break;
 			case 0xc:
-				exports.r12 = result & 0xff;
-				exports.r13 = result >> 8 & 0xff;
+				mcu.r12 = result & 0xff;
+				mcu.r13 = result >> 8 & 0xff;
 				break;
 			case 0xe:
-				exports.r14 = result & 0xff;
-				exports.r15 = result >> 8 & 0xff;
+				mcu.r14 = result & 0xff;
+				mcu.r15 = result >> 8 & 0xff;
 				break;
 		}
 	}
-	setOperationResult32bit(exports, n, result) {
+	setOperationResult32bit(mcu, n, result) {
 		switch (n) {
 			case 0:
-				exports.r0 = result & 0xff;
-				exports.r1 = result >> 8 & 0xff;
-				exports.r2 = result >> 16 & 0xff;
-				exports.r3 = result >> 24 & 0xff;
+				mcu.r0 = result & 0xff;
+				mcu.r1 = result >> 8 & 0xff;
+				mcu.r2 = result >> 16 & 0xff;
+				mcu.r3 = result >> 24 & 0xff;
 				break;
 			case 4:
-				exports.r4 = result & 0xff;
-				exports.r5 = result >> 8 & 0xff;
-				exports.r6 = result >> 16 & 0xff;
-				exports.r7 = result >> 24 & 0xff;
+				mcu.r4 = result & 0xff;
+				mcu.r5 = result >> 8 & 0xff;
+				mcu.r6 = result >> 16 & 0xff;
+				mcu.r7 = result >> 24 & 0xff;
 				break;
 			case 8:
-				exports.r8 = result & 0xff;
-				exports.r9 = result >> 8 & 0xff;
-				exports.r10 = result >> 16 & 0xff;
-				exports.r11 = result >> 24 & 0xff;
+				mcu.r8 = result & 0xff;
+				mcu.r9 = result >> 8 & 0xff;
+				mcu.r10 = result >> 16 & 0xff;
+				mcu.r11 = result >> 24 & 0xff;
 				break;
 			case 0xc:
-				exports.r12 = result & 0xff;
-				exports.r13 = result >> 8 & 0xff;
-				exports.r14 = result >> 16 & 0xff;
-				exports.r15 = result >> 24 & 0xff;
+				mcu.r12 = result & 0xff;
+				mcu.r13 = result >> 8 & 0xff;
+				mcu.r14 = result >> 16 & 0xff;
+				mcu.r15 = result >> 24 & 0xff;
 				break;
 		}
 	}
-	setOperationResult64bit(exports, n, result0, result1) {
+	setOperationResult64bit(mcu, n, result0, result1) {
 		switch (n) {
 			case 0:
-				exports.r0 = result0 & 0xff;
-				exports.r1 = result0 >> 8 & 0xff;
-				exports.r2 = result0 >> 16 & 0xff;
-				exports.r3 = result0 >> 24 & 0xff;
-				exports.r4 = result1 & 0xff;
-				exports.r5 = result1 >> 8 & 0xff;
-				exports.r6 = result1 >> 16 & 0xff;
-				exports.r7 = result1 >> 24 & 0xff;
+				mcu.r0 = result0 & 0xff;
+				mcu.r1 = result0 >> 8 & 0xff;
+				mcu.r2 = result0 >> 16 & 0xff;
+				mcu.r3 = result0 >> 24 & 0xff;
+				mcu.r4 = result1 & 0xff;
+				mcu.r5 = result1 >> 8 & 0xff;
+				mcu.r6 = result1 >> 16 & 0xff;
+				mcu.r7 = result1 >> 24 & 0xff;
 				break;
 			case 8:
-				exports.r8 = result0 & 0xff;
-				exports.r9 = result0 >> 8 & 0xff;
-				exports.r10 = result0 >> 16 & 0xff;
-				exports.r11 = result0 >> 24 & 0xff;
-				exports.r12 = result1 & 0xff;
-				exports.r13 = result1 >> 8 & 0xff;
-				exports.r14 = result1 >> 16 & 0xff;
-				exports.r15 = result1 >> 24 & 0xff;
+				mcu.r8 = result0 & 0xff;
+				mcu.r9 = result0 >> 8 & 0xff;
+				mcu.r10 = result0 >> 16 & 0xff;
+				mcu.r11 = result0 >> 24 & 0xff;
+				mcu.r12 = result1 & 0xff;
+				mcu.r13 = result1 >> 8 & 0xff;
+				mcu.r14 = result1 >> 16 & 0xff;
+				mcu.r15 = result1 >> 24 & 0xff;
 				break;
 		}
 	}
-	setFlagsFor8bitAdd(exports, op0, op1, result) {
-		let psw = exports.psw & ~(exports.NXU16_MASK_C_FLAG | exports.NXU16_MASK_Z_FLAG | exports.NXU16_MASK_S_FLAG | exports.NXU16_MASK_OV_FLAG | exports.NXU16_MASK_HC_FLAG);
+	setFlagsFor8bitAdd(mcu, op0, op1, result) {
+		let psw = mcu.psw & ~(mcu.NXU16_MASK_C_FLAG | mcu.NXU16_MASK_Z_FLAG | mcu.NXU16_MASK_S_FLAG | mcu.NXU16_MASK_OV_FLAG | mcu.NXU16_MASK_HC_FLAG);
 		if (result > 0xff) {
-			psw |= exports.NXU16_MASK_C_FLAG;
+			psw |= mcu.NXU16_MASK_C_FLAG;
 			result &= 0xff;
 		}
 		if (result === 0) {
-			psw |= exports.NXU16_MASK_Z_FLAG;
+			psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else if (result & 0x80) {
-			psw |= exports.NXU16_MASK_S_FLAG;
+			psw |= mcu.NXU16_MASK_S_FLAG;
 		}
 		if ((result ^ op0 ^ op1) & 0x10) {
-			psw |= exports.NXU16_MASK_HC_FLAG;
+			psw |= mcu.NXU16_MASK_HC_FLAG;
 		}
 		if (!((op0 ^ op1) & 0x80) && (op1 ^ result) & 0x80) {
-			psw |= exports.NXU16_MASK_OV_FLAG;
+			psw |= mcu.NXU16_MASK_OV_FLAG;
 		}
-		exports.psw = psw;
+		mcu.psw = psw;
 		return result;
 	}
-	setFlagsFor8bitAddc(exports, op0, op1, result, zero) {
-		let psw = exports.psw & ~(exports.NXU16_MASK_C_FLAG | exports.NXU16_MASK_Z_FLAG | exports.NXU16_MASK_S_FLAG | exports.NXU16_MASK_OV_FLAG | exports.NXU16_MASK_HC_FLAG);
+	setFlagsFor8bitAddc(mcu, op0, op1, result, zero) {
+		let psw = mcu.psw & ~(mcu.NXU16_MASK_C_FLAG | mcu.NXU16_MASK_Z_FLAG | mcu.NXU16_MASK_S_FLAG | mcu.NXU16_MASK_OV_FLAG | mcu.NXU16_MASK_HC_FLAG);
 		if (result > 0xff) {
-			psw |= exports.NXU16_MASK_C_FLAG;
+			psw |= mcu.NXU16_MASK_C_FLAG;
 			result &= 0xff;
 		}
 		if (zero && result === 0) {
-			psw |= exports.NXU16_MASK_Z_FLAG;
+			psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else if (result & 0x80) {
-			psw |= exports.NXU16_MASK_S_FLAG;
+			psw |= mcu.NXU16_MASK_S_FLAG;
 		}
 		if ((result ^ op0 ^ op1) & 0x10) {
-			psw |= exports.NXU16_MASK_HC_FLAG;
+			psw |= mcu.NXU16_MASK_HC_FLAG;
 		}
 		if (!((op0 ^ op1) & 0x80) && (op1 ^ result) & 0x80) {
-			psw |= exports.NXU16_MASK_OV_FLAG;
+			psw |= mcu.NXU16_MASK_OV_FLAG;
 		}
-		exports.psw = psw;
+		mcu.psw = psw;
 		return result;
 	}
-	setZeroAndSignFlags_8bit(exports, op0, op1, result) {
-		let psw = exports.psw & ~(exports.NXU16_MASK_Z_FLAG | exports.NXU16_MASK_S_FLAG);
+	setZeroAndSignFlags_8bit(mcu, op0, op1, result) {
+		let psw = mcu.psw & ~(mcu.NXU16_MASK_Z_FLAG | mcu.NXU16_MASK_S_FLAG);
 		if (result === 0) {
-			psw |= exports.NXU16_MASK_Z_FLAG;
+			psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else if (result & 0x80) {
-			psw |= exports.NXU16_MASK_S_FLAG;
+			psw |= mcu.NXU16_MASK_S_FLAG;
 		}
-		exports.psw = psw;
+		mcu.psw = psw;
 		return result;
 	}
-	setFlagsFor8bitSub(exports, op0, op1, result) {
-		let psw = exports.psw & ~(exports.NXU16_MASK_C_FLAG | exports.NXU16_MASK_Z_FLAG | exports.NXU16_MASK_S_FLAG | exports.NXU16_MASK_OV_FLAG | exports.NXU16_MASK_HC_FLAG);
+	setFlagsFor8bitSub(mcu, op0, op1, result) {
+		let psw = mcu.psw & ~(mcu.NXU16_MASK_C_FLAG | mcu.NXU16_MASK_Z_FLAG | mcu.NXU16_MASK_S_FLAG | mcu.NXU16_MASK_OV_FLAG | mcu.NXU16_MASK_HC_FLAG);
 		if (result < 0) {
-			psw |= exports.NXU16_MASK_C_FLAG;
+			psw |= mcu.NXU16_MASK_C_FLAG;
 			result &= 0xff;
 		}
 		if (result === 0) {
-			psw |= exports.NXU16_MASK_Z_FLAG;
+			psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else if (result & 0x80) {
-			psw |= exports.NXU16_MASK_S_FLAG;
+			psw |= mcu.NXU16_MASK_S_FLAG;
 		}
 		if ((op0 & 0xf) - (op1 & 0xf) & -16) {
-			psw |= exports.NXU16_MASK_HC_FLAG;
+			psw |= mcu.NXU16_MASK_HC_FLAG;
 		}
 		if ((op0 ^ op1) & 0x80 && ((op1 ^ result) & 0x80) === 0) {
-			psw |= exports.NXU16_MASK_OV_FLAG;
+			psw |= mcu.NXU16_MASK_OV_FLAG;
 		}
-		exports.psw = psw;
+		mcu.psw = psw;
 		return result;
 	}
-	setFlagsFor8bitSubc(exports, op0, op1, result, zero) {
-		let psw = exports.psw & ~(exports.NXU16_MASK_C_FLAG | exports.NXU16_MASK_Z_FLAG | exports.NXU16_MASK_S_FLAG | exports.NXU16_MASK_OV_FLAG | exports.NXU16_MASK_HC_FLAG);
+	setFlagsFor8bitSubc(mcu, op0, op1, result, zero) {
+		let psw = mcu.psw & ~(mcu.NXU16_MASK_C_FLAG | mcu.NXU16_MASK_Z_FLAG | mcu.NXU16_MASK_S_FLAG | mcu.NXU16_MASK_OV_FLAG | mcu.NXU16_MASK_HC_FLAG);
 		if (result < 0) {
-			psw |= exports.NXU16_MASK_C_FLAG;
+			psw |= mcu.NXU16_MASK_C_FLAG;
 			result &= 0xff;
 		}
 		if (zero && result === 0) {
-			psw |= exports.NXU16_MASK_Z_FLAG;
+			psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else if (result & 0x80) {
-			psw |= exports.NXU16_MASK_S_FLAG;
+			psw |= mcu.NXU16_MASK_S_FLAG;
 		}
 		if ((op0 & 0xf) - (op1 & 0xf) & -16) {
-			psw |= exports.NXU16_MASK_HC_FLAG;
+			psw |= mcu.NXU16_MASK_HC_FLAG;
 		}
 		if ((op0 ^ op1) & 0x80 && ((op1 ^ result) & 0x80) === 0) {
-			psw |= exports.NXU16_MASK_OV_FLAG;
+			psw |= mcu.NXU16_MASK_OV_FLAG;
 		}
-		exports.psw = psw;
+		mcu.psw = psw;
 		return result;
 	}
-	setFlagsFor16bitAdd(exports, op0, op1, result) {
-		let psw = exports.psw & ~(exports.NXU16_MASK_C_FLAG | exports.NXU16_MASK_Z_FLAG | exports.NXU16_MASK_S_FLAG | exports.NXU16_MASK_OV_FLAG | exports.NXU16_MASK_HC_FLAG);
+	setFlagsFor16bitAdd(mcu, op0, op1, result) {
+		let psw = mcu.psw & ~(mcu.NXU16_MASK_C_FLAG | mcu.NXU16_MASK_Z_FLAG | mcu.NXU16_MASK_S_FLAG | mcu.NXU16_MASK_OV_FLAG | mcu.NXU16_MASK_HC_FLAG);
 		if (result > 0xffff) {
-			psw |= exports.NXU16_MASK_C_FLAG;
+			psw |= mcu.NXU16_MASK_C_FLAG;
 			result &= 0xffff;
 		}
 		if (result === 0) {
-			psw |= exports.NXU16_MASK_Z_FLAG;
+			psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else if (result & 0x8000) {
-			psw |= exports.NXU16_MASK_S_FLAG;
+			psw |= mcu.NXU16_MASK_S_FLAG;
 		}
 		if ((op1 & 0xfff) + (op0 & 0xfff) > 0xfff) {
-			psw |= exports.NXU16_MASK_HC_FLAG;
+			psw |= mcu.NXU16_MASK_HC_FLAG;
 		}
 		if (((op0 ^ op1) & 0x8000) === 0) {
 			if (((op1 ^ result) & 0x8000) !== 0) {
-				psw |= exports.NXU16_MASK_OV_FLAG;
+				psw |= mcu.NXU16_MASK_OV_FLAG;
 			}
 		}
-		exports.psw = psw;
+		mcu.psw = psw;
 		return result;
 	}
-	setFlagsFor8bitInc(exports, op0, op1, result) {
-		let psw = exports.psw & ~(exports.NXU16_MASK_Z_FLAG | exports.NXU16_MASK_S_FLAG | exports.NXU16_MASK_OV_FLAG | exports.NXU16_MASK_HC_FLAG);
+	setFlagsFor8bitInc(mcu, op0, op1, result) {
+		let psw = mcu.psw & ~(mcu.NXU16_MASK_Z_FLAG | mcu.NXU16_MASK_S_FLAG | mcu.NXU16_MASK_OV_FLAG | mcu.NXU16_MASK_HC_FLAG);
 		if (result === 0) {
-			psw |= exports.NXU16_MASK_Z_FLAG;
+			psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else if (result & 0x80) {
-			psw |= exports.NXU16_MASK_S_FLAG;
+			psw |= mcu.NXU16_MASK_S_FLAG;
 		}
 		if ((op1 & 0xf) + (op0 & 0xf) > 0xf) {
-			psw |= exports.NXU16_MASK_HC_FLAG;
+			psw |= mcu.NXU16_MASK_HC_FLAG;
 		}
 		if (((op0 ^ op1) & 0x80) === 0) {
 			if (((op1 ^ result) & 0x80) !== 0) {
-				psw |= exports.NXU16_MASK_OV_FLAG;
+				psw |= mcu.NXU16_MASK_OV_FLAG;
 			}
 		}
-		exports.psw = psw;
+		mcu.psw = psw;
 		return result;
 	}
-	setFlagsFor16bitSub(exports, op0, op1, result) {
-		let psw = exports.psw & ~(exports.NXU16_MASK_C_FLAG | exports.NXU16_MASK_Z_FLAG | exports.NXU16_MASK_S_FLAG | exports.NXU16_MASK_OV_FLAG | exports.NXU16_MASK_HC_FLAG);
+	setFlagsFor16bitSub(mcu, op0, op1, result) {
+		let psw = mcu.psw & ~(mcu.NXU16_MASK_C_FLAG | mcu.NXU16_MASK_Z_FLAG | mcu.NXU16_MASK_S_FLAG | mcu.NXU16_MASK_OV_FLAG | mcu.NXU16_MASK_HC_FLAG);
 		if (op1 > op0) {
-			psw |= exports.NXU16_MASK_C_FLAG;
+			psw |= mcu.NXU16_MASK_C_FLAG;
 		}
 		result &= 0xffff;
 		if (result === 0) {
-			psw |= exports.NXU16_MASK_Z_FLAG;
+			psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else if (result & 0x8000) {
-			psw |= exports.NXU16_MASK_S_FLAG;
+			psw |= mcu.NXU16_MASK_S_FLAG;
 		}
 		if ((op0 & 0xfff) - (op1 & 0xfff) & -4096) {
-			psw |= exports.NXU16_MASK_HC_FLAG;
+			psw |= mcu.NXU16_MASK_HC_FLAG;
 		}
 		if ((op0 ^ op1) & 0x8000 && ((op1 ^ result) & 0x8000) === 0) {
-			psw |= exports.NXU16_MASK_OV_FLAG;
+			psw |= mcu.NXU16_MASK_OV_FLAG;
 		}
-		exports.psw = psw;
+		mcu.psw = psw;
 		return result;
 	}
-	setFlagsFor8bitDec(exports, op0, op1, result) {
-		let psw = exports.psw & ~(exports.NXU16_MASK_Z_FLAG | exports.NXU16_MASK_S_FLAG | exports.NXU16_MASK_OV_FLAG | exports.NXU16_MASK_HC_FLAG);
+	setFlagsFor8bitDec(mcu, op0, op1, result) {
+		let psw = mcu.psw & ~(mcu.NXU16_MASK_Z_FLAG | mcu.NXU16_MASK_S_FLAG | mcu.NXU16_MASK_OV_FLAG | mcu.NXU16_MASK_HC_FLAG);
 		result &= 0xff;
 		if (result === 0) {
-			psw |= exports.NXU16_MASK_Z_FLAG;
+			psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else if (result & 0x80) {
-			psw |= exports.NXU16_MASK_S_FLAG;
+			psw |= mcu.NXU16_MASK_S_FLAG;
 		}
 		if ((op0 & 0xf) - (op1 & 0xf) & -16) {
-			psw |= exports.NXU16_MASK_HC_FLAG;
+			psw |= mcu.NXU16_MASK_HC_FLAG;
 		}
 		if ((op0 ^ op1) & 0x80 && ((op1 ^ result) & 0x80) === 0) {
-			psw |= exports.NXU16_MASK_OV_FLAG;
+			psw |= mcu.NXU16_MASK_OV_FLAG;
 		}
-		exports.psw = psw;
+		mcu.psw = psw;
 		return result;
 	}
-	setZeroAndSignFlags_16bit(exports, op0, op1, result) {
-		let psw = exports.psw & ~(exports.NXU16_MASK_Z_FLAG | exports.NXU16_MASK_S_FLAG);
+	setZeroAndSignFlags_16bit(mcu, op0, op1, result) {
+		let psw = mcu.psw & ~(mcu.NXU16_MASK_Z_FLAG | mcu.NXU16_MASK_S_FLAG);
 		if (result === 0) {
-			psw |= exports.NXU16_MASK_Z_FLAG;
+			psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else if (result & 0x8000) {
-			psw |= exports.NXU16_MASK_S_FLAG;
+			psw |= mcu.NXU16_MASK_S_FLAG;
 		}
-		exports.psw = psw;
+		mcu.psw = psw;
 		return result & 0xffff;
 	}
-	setZeroAndSignFlags_32bit(exports, op0, op1, result) {
-		let psw = exports.psw & ~(exports.NXU16_MASK_Z_FLAG | exports.NXU16_MASK_S_FLAG);
+	setZeroAndSignFlags_32bit(mcu, op0, op1, result) {
+		let psw = mcu.psw & ~(mcu.NXU16_MASK_Z_FLAG | mcu.NXU16_MASK_S_FLAG);
 		if (result === 0) {
-			psw |= exports.NXU16_MASK_Z_FLAG;
+			psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else if (result & 0x80000000) {
-			psw |= exports.NXU16_MASK_S_FLAG;
+			psw |= mcu.NXU16_MASK_S_FLAG;
 		}
-		exports.psw = psw;
+		mcu.psw = psw;
 		return result & 0xffffffff;
 	}
-	setZeroAndSignFlags_64bit(exports, op0, op1, result) {
-		let psw = exports.psw & ~(exports.NXU16_MASK_Z_FLAG | exports.NXU16_MASK_S_FLAG);
+	setZeroAndSignFlags_64bit(mcu, op0, op1, result) {
+		let psw = mcu.psw & ~(mcu.NXU16_MASK_Z_FLAG | mcu.NXU16_MASK_S_FLAG);
 		if (op0 === 0 && op1 === 0) {
-			psw |= exports.NXU16_MASK_Z_FLAG;
+			psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else if (op1 & 0x80000000) {
-			psw |= exports.NXU16_MASK_S_FLAG;
+			psw |= mcu.NXU16_MASK_S_FLAG;
 		}
-		exports.psw = psw;
+		mcu.psw = psw;
 	}
-	callScreenChanged(exports, addr) {
-		if (exports.parent !== null) {
+	callScreenChanged(mcu, addr) {
+		if (mcu.parent !== null) {
 			let screen = this.dataMemory.getSubArray(addr, addr + 0x600);
-			exports.parent.notifyScreenListeners(screen);
+			mcu.parent.notifyScreenListeners(screen);
 		}
 	}
-	callTopIconsChanged(exports, addr) {
-		if (exports.parent !== null) {
+	callTopIconsChanged(mcu, addr) {
+		if (mcu.parent !== null) {
 			let sbar = this.dataMemory.get32(0, addr);
 			this.is2ndMode = (sbar & 2) !== 0;
-			exports.parent.notifyTopIconScreenListeners(sbar);
+			mcu.parent.notifyTopIconScreenListeners(sbar);
 		}
 	}
-	add_Rn_Rm(exports, operand) {
+	add_Rn_Rm(mcu, operand) {
 		let result;
-		let op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-		let op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf);
+		let op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+		let op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf);
 		;
 		result = op0 + op1;
-		result = exports.setFlagsFor8bitAdd(exports, op0, op1, result);
-		exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+		result = mcu.setFlagsFor8bitAdd(mcu, op0, op1, result);
+		mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 	}
-	addc_Rn_Rm(exports, operand) {
+	addc_Rn_Rm(mcu, operand) {
 		let result;
-		let zero = (exports.psw & exports.NXU16_MASK_Z_FLAG) !== 0;
+		let zero = (mcu.psw & mcu.NXU16_MASK_Z_FLAG) !== 0;
 		let op1;
-		let op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
+		let op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
 		if ((operand & 0xf000) === 0x6000) { // ADDC Rn, #imm8
 			op1 = operand & 0xff;
 		} else { // ADDC Rn, Rm
-			op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf);
+			op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf);
 		}
-		if ((exports.psw & exports.NXU16_MASK_C_FLAG) !== 0) {
+		if ((mcu.psw & mcu.NXU16_MASK_C_FLAG) !== 0) {
 			result = op0 + op1 + 0x1;
 		} else {
 			result = op0 + op1;
 		}
-		result = exports.setFlagsFor8bitAddc(exports, op0, op1, result, zero);
-		exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+		result = mcu.setFlagsFor8bitAddc(mcu, op0, op1, result, zero);
+		mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 	}
-	add_Rn_Imm8(exports, operand) {
-		let op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
+	add_Rn_Imm8(mcu, operand) {
+		let op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
 		;
 		let op1 = operand & 0xff;
 		let result;
-		if ((operand & 0x6000) !== 0 && (exports.psw & exports.NXU16_MASK_C_FLAG) !== 0) { // unused?
+		if ((operand & 0x6000) !== 0 && (mcu.psw & mcu.NXU16_MASK_C_FLAG) !== 0) { // unused?
 			result = op0 + op1 + 1;
 		} else {
 			result = op0 + op1;
 		}
-		result = exports.setFlagsFor8bitAdd(exports, op0, op1, result);
-		exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+		result = mcu.setFlagsFor8bitAdd(mcu, op0, op1, result);
+		mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 	}
-	add_ERn_ERm(exports, operand) {
-		let op0 = exports.get16BitRegister(exports, operand >> 8 & 0xf);
-		let op1 = exports.get16BitRegister(exports, operand >> 4 & 0xf);
+	add_ERn_ERm(mcu, operand) {
+		let op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
+		let op1 = mcu.get16BitRegister(mcu, operand >> 4 & 0xf);
 		;
 		let result = op0 + op1;
-		result = exports.setFlagsFor16bitAdd(exports, op0, op1, result);
-		exports.setOperationResult16bit(exports, operand >> 8 & 0xf, result);
+		result = mcu.setFlagsFor16bitAdd(mcu, op0, op1, result);
+		mcu.setOperationResult16bit(mcu, operand >> 8 & 0xf, result);
 	}
-	add_ERn_imm7(exports, operand) {
-		let op0 = exports.get16BitRegister(exports, operand >> 8 & 0xe);
+	add_ERn_imm7(mcu, operand) {
+		let op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xe);
 		let op1 = operand & 0x7f;
 		if ((op1 & 0x40) === 0) {
 			op1 &= 0x3f;
@@ -1158,108 +1158,108 @@ class mcu {
 			op1 |= 0xffc0;
 		}
 		let result = op0 + op1;
-		result = exports.setFlagsFor16bitAdd(exports, op0, op1, result);
-		exports.setOperationResult16bit(exports, operand >> 8 & 0xf, result);
+		result = mcu.setFlagsFor16bitAdd(mcu, op0, op1, result);
+		mcu.setOperationResult16bit(mcu, operand >> 8 & 0xf, result);
 	}
-	and_Rn_Rm(exports, operand) {
-		let op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-		let op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf);
+	and_Rn_Rm(mcu, operand) {
+		let op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+		let op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf);
 		let result = op0 & op1;
-		result = exports.setZeroAndSignFlags_8bit(exports, op0, op1, result);
-		exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+		result = mcu.setZeroAndSignFlags_8bit(mcu, op0, op1, result);
+		mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 	}
-	and_Rn_imm8(exports, operand) {
+	and_Rn_imm8(mcu, operand) {
 		let result;
-		let op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
+		let op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
 		let op1 = operand & 0xff;
 		result = op0 & op1;
-		result = exports.setZeroAndSignFlags_8bit(exports, op0, op1, result);
-		exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+		result = mcu.setZeroAndSignFlags_8bit(mcu, op0, op1, result);
+		mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 	}
-	sub_Rn_Rm(exports, operand) {
+	sub_Rn_Rm(mcu, operand) {
 		let result;
 		let obj_check = operand & 0xf00f;
 		let op0;
 		let op1;
 		if ((obj_check & 0xf000) === 0x7000) { // CMP/SUB Rn, #imm8
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
 			op1 = operand & 0xff;
 		} else { // CMP/SUB Rn, Rm
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-			op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf);
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+			op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf);
 		}
 		result = op0 - op1;
-		result = exports.setFlagsFor8bitSub(exports, op0, op1, result);
+		result = mcu.setFlagsFor8bitSub(mcu, op0, op1, result);
 		if (obj_check === 0x8008) { // SUB
-			exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+			mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 		}
 	}
-	subc_Rn_Rm(exports, operand) {
+	subc_Rn_Rm(mcu, operand) {
 		let result;
 		let obj_check = operand & 0xf00f;
 		let op0;
 		let op1;
-		let cArr = (exports.psw & exports.NXU16_MASK_C_FLAG) !== 0;
-		let zero = (exports.psw & exports.NXU16_MASK_Z_FLAG) !== 0;
+		let cArr = (mcu.psw & mcu.NXU16_MASK_C_FLAG) !== 0;
+		let zero = (mcu.psw & mcu.NXU16_MASK_Z_FLAG) !== 0;
 		if ((obj_check & 0xf000) === 0x5000 || (obj_check & 0xf000) === 0x7000) { // CMPC/SUBC Rn, #imm8
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
 			op1 = operand & 0xff;
 		} else { // CMPC/SUBC Rn, Rm
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-			op1 = exports.get8BitRegister(exports, operand >> 0x4 & 0xf);
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+			op1 = mcu.get8BitRegister(mcu, operand >> 0x4 & 0xf);
 		}
 		result = op0 - op1 - (cArr ? 0x1 : 0);
-		result = exports.setFlagsFor8bitSubc(exports, op0, op1, result, zero);
+		result = mcu.setFlagsFor8bitSubc(mcu, op0, op1, result, zero);
 		if (obj_check === 0x8009) { // SUBC
-			exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+			mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 		}
 	}
-	mov_Rn_Rm(exports, operand) {
+	mov_Rn_Rm(mcu, operand) {
 		let result;
 		let obj_check = operand & 0xf00f;
 		let op0;
 		let op1;
 		if (obj_check >> 12 === 0) { // MOV Rn, #imm8
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
 			op1 = operand & 0xff;
 		} else {
 			if (obj_check === 0xa00f) { // MOV ECSR, Rm
-				op0 = exports.getECSRForELevel(exports);
-				op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf);
+				op0 = mcu.getECSRForELevel(mcu);
+				op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf);
 			} else {
 				if (obj_check === 0xa00d) { // MOV ELR, Rm
-					op0 = exports.getELRForELevel(exports);
-					op1 = exports.get16BitRegister(exports, operand >> 8 & 0xf);
+					op0 = mcu.getELRForELevel(mcu);
+					op1 = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
 				} else {
 					if (obj_check === 0xa00c) { // MOV EPSW, Rm
-						op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf);
+						op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf);
 					} else {
 						if (obj_check === 0xa005) { // MOV ERn, ELR
-							op0 = exports.get16BitRegister(exports, operand >> 8 & 0xf);
-							op1 = exports.getELRForELevel(exports);
+							op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
+							op1 = mcu.getELRForELevel(mcu);
 						} else {
 							if (obj_check === 0xa00b) { // MOV PSW, Rm
-								op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf);
+								op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf);
 							} else {
 								if (obj_check === 0xa007) { // MOV Rn, ECSR
-									op1 = exports.getECSRForELevel(exports);
+									op1 = mcu.getECSRForELevel(mcu);
 								} else {
 									if (obj_check === 0xa004) { // MOV Rn, EPSW
-										op1 = exports.getEPSWForELevel(exports);
+										op1 = mcu.getEPSWForELevel(mcu);
 									} else {
 										if (obj_check === 0xa003) { // MOV Rn, PSW
-											op1 = exports.psw;
+											op1 = mcu.psw;
 										} else {
 											if ((operand & 0xf0ff) === 0xa01a) { // MOV ERn, SP
-												op1 = exports.sp;
+												op1 = mcu.sp;
 											} else {
 												if ((operand & 0xff00) === 0xe900) { // MOV PSW, #unsigned8
 													op1 = operand & 0xff;
 												} else if ((operand & 0xff0f) === 0xa10a) { // MOV SP, ERm
-													op1 = exports.get16BitRegister(exports, operand >> 4 & 0xf);
+													op1 = mcu.get16BitRegister(mcu, operand >> 4 & 0xf);
 												} else { // MOV Rn, Rm
-													op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-													op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf);
+													op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+													op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf);
 												}
 											}
 										}
@@ -1274,27 +1274,27 @@ class mcu {
 		result = op1;
 		if (obj_check === 0xa00f) { // MOV ECSR, Rm
 			result &= 0xf;
-			exports.setECSRForELevel(exports, result);
+			mcu.setECSRForELevel(mcu, result);
 		} else {
 			if (obj_check === 0xa00d) { // MOV ELR, Rm
-				exports.setELRForELevel(exports, result);
+				mcu.setELRForELevel(mcu, result);
 			} else {
 				if (obj_check === 0xa00c) { // MOV EPSW, Rm
-					exports.setEPSWForELevel(exports, result);
+					mcu.setEPSWForELevel(mcu, result);
 				} else {
 					if (obj_check === 0xa00b || (operand & 0xff00) === 0xe900) { // MOV PSW, Rm
-						exports.psw = result;
+						mcu.psw = result;
 					} else {
 						if ((operand & 0xf0ff) === 0xa01a || obj_check === 0xa005) { // MOV ERn, obj
-							exports.setOperationResult16bit(exports, operand >> 8 & 0xf, result);
+							mcu.setOperationResult16bit(mcu, operand >> 8 & 0xf, result);
 						} else {
 							if (obj_check === 0xa003 || obj_check === 0xa007 || obj_check === 0xa004) { // MOV Rn, obj
-								exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+								mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 							} else if ((operand & 0xff0f) === 0xa10a) { // MOV SP, ERm
-								exports.sp = result & 0xfffe;
+								mcu.sp = result & 0xfffe;
 							} else { // MOV Rn, Rm
-								result = exports.setZeroAndSignFlags_8bit(exports, op0, op1, result);
-								exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+								result = mcu.setZeroAndSignFlags_8bit(mcu, op0, op1, result);
+								mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 							}
 						}
 					}
@@ -1302,113 +1302,113 @@ class mcu {
 			}
 		}
 	}
-	mov_ERn_ERm(exports, operand) {
+	mov_ERn_ERm(mcu, operand) {
 		let op0;
 		let op1;
 		if ((operand & 0xf00f) === 0xf005) { // MOV ERn, ERm
-			op0 = exports.get16BitRegister(exports, operand >> 8 & 0xf);
-			op1 = exports.get16BitRegister(exports, operand >> 4 & 0xf);
+			op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
+			op1 = mcu.get16BitRegister(mcu, operand >> 4 & 0xf);
 		} else { // MOV ERn, #imm7
-			op0 = exports.get16BitRegister(exports, operand >> 8 & 0xe);
+			op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xe);
 			op1 = operand & 0x7f;
 		}
 		if ((operand & 0xf000) === 0xe000 && (op1 & 0x40) !== 0) {
 			op1 |= 0xff80;
 		}
 		let result = op0 = op1;
-		result = exports.setZeroAndSignFlags_16bit(exports, op0, op1, result);
-		exports.setOperationResult16bit(exports, operand >> 8 & 0xf, result);
+		result = mcu.setZeroAndSignFlags_16bit(mcu, op0, op1, result);
+		mcu.setOperationResult16bit(mcu, operand >> 8 & 0xf, result);
 	}
-	or_Rn_Rm(exports, operand) {
+	or_Rn_Rm(mcu, operand) {
 		let op0;
 		let op1;
 		let result;
 		if ((operand & 0xf00f) === 0x8003) { // OR Rn, Rm
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-			op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf);
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+			op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf);
 		} else { // OR Rn, #imm8
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
 			op1 = operand & 0xff;
 		}
 		result = op0 | op1;
-		result = exports.setZeroAndSignFlags_8bit(exports, op0, op1, result);
-		exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+		result = mcu.setZeroAndSignFlags_8bit(mcu, op0, op1, result);
+		mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 	}
-	xor_Rn_Rm(exports, operand) {
+	xor_Rn_Rm(mcu, operand) {
 		let op0;
 		let op1;
 		let result;
 		if ((operand & 0xf00f) === 0x8004) { // XOR Rn, Rm
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-			op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf);
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+			op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf);
 		} else { // XOR Rn, #imm8
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
 			op1 = operand & 0xff;
 		}
 		result = op0 ^ op1;
-		result = exports.setZeroAndSignFlags_8bit(exports, op0, op1, result);
-		exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+		result = mcu.setZeroAndSignFlags_8bit(mcu, op0, op1, result);
+		mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 	}
-	sub_ERn_ERm(exports, operand) {
-		let op0 = exports.get16BitRegister(exports, operand >> 8 & 0xf);
-		let op1 = exports.get16BitRegister(exports, operand >> 4 & 0xf);
+	sub_ERn_ERm(mcu, operand) {
+		let op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
+		let op1 = mcu.get16BitRegister(mcu, operand >> 4 & 0xf);
 		let result = op0 - op1;
-		result = exports.setFlagsFor16bitSub(exports, op0, op1, result);
+		result = mcu.setFlagsFor16bitSub(mcu, op0, op1, result);
 	}
-	sll_Rn_Rm(exports, operand) {
+	sll_Rn_Rm(mcu, operand) {
 		let op0;
 		let op1;
 		let result;
 		if ((operand & 0xf00f) === 0x800a) { // SLL Rn, Rm
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-			op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf) & 7;
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+			op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf) & 7;
 		} else { // SLL Rn, #width
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
 			op1 = operand >> 4 & 7;
 		}
 		result = op0 << op1;
 		if (op1 > 0) {
 			if ((result & 0x100) !== 0) {
-				exports.psw |= exports.NXU16_MASK_C_FLAG;
+				mcu.psw |= mcu.NXU16_MASK_C_FLAG;
 			} else {
-				exports.psw &= ~exports.NXU16_MASK_C_FLAG;
+				mcu.psw &= ~mcu.NXU16_MASK_C_FLAG;
 			}
 		}
 		result &= 0xff;
-		exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+		mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 	}
-	sllc_Rn_Rm(exports, operand) {
+	sllc_Rn_Rm(mcu, operand) {
 		let op0;
 		let op1;
 		let result;
 		if ((operand & 0xf00f) === 0x800b) { // SLLC Rn, Rm
-			op0 = exports.get16BitRegisterReverse(exports, operand >> 8 & 0xf);
-			op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf) & 7;
+			op0 = mcu.get16BitRegisterReverse(mcu, operand >> 8 & 0xf);
+			op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf) & 7;
 		} else { // SLLC Rn, #width
-			op0 = exports.get16BitRegisterReverse(exports, operand >> 8 & 0xf);
+			op0 = mcu.get16BitRegisterReverse(mcu, operand >> 8 & 0xf);
 			op1 = operand >> 4 & 7;
 		}
 		result = op0 << op1;
 		if (op1 > 0) {
 			if ((result & 0x10000) !== 0) {
-				exports.psw |= exports.NXU16_MASK_C_FLAG;
+				mcu.psw |= mcu.NXU16_MASK_C_FLAG;
 			} else {
-				exports.psw &= ~exports.NXU16_MASK_C_FLAG;
+				mcu.psw &= ~mcu.NXU16_MASK_C_FLAG;
 			}
 		}
 		result = (result & 0xff00) >> 8;
-		exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+		mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 	}
-	sra_Rn_Rm(exports, operand) {
+	sra_Rn_Rm(mcu, operand) {
 		let op0;
 		let op1;
 		let bit;
 		let result;
 		if ((operand & 0xf00f) === 0x800e) { // SRA Rn, Rm
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-			op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf) & 7;
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+			op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf) & 7;
 		} else { // SRA Rn, #width
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
 			op1 = operand >> 4 & 7;
 		}
 		bit = op0 & 0x80;
@@ -1419,166 +1419,166 @@ class mcu {
 		result |= bit;
 		if (op1 > 0) {
 			op1 = op1 - 0x1;
-			exports.setC(exports, false);
-			exports.psw |= (op0 >> op1 & 1) << 7;
+			mcu.setC(mcu, false);
+			mcu.psw |= (op0 >> op1 & 1) << 7;
 		}
 		result &= 0xff;
-		exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+		mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 	}
-	srl_Rn_Rm(exports, operand) {
+	srl_Rn_Rm(mcu, operand) {
 		let op0;
 		let op1;
 		let result;
 		if ((operand & 0xf00f) === 0x800c) { // SRL Rn, Rm
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-			op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf) & 7;
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+			op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf) & 7;
 		} else { // SRL Rn, #width
-			op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
+			op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
 			op1 = operand >> 4 & 7;
 		}
 		result = op0 >> op1;
 		if (op1 > 0) {
 			op1 = op1 - 1;
 			if (op0 >> op1 & 1) {
-				exports.setC(exports, true);
+				mcu.setC(mcu, true);
 			} else {
-				exports.setC(exports, false);
+				mcu.setC(mcu, false);
 			}
 		}
 		result &= 0xff;
-		exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+		mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 	}
-	srlc_Rn_Rm(exports, operand) {
+	srlc_Rn_Rm(mcu, operand) {
 		let op0;
 		let op1;
 		let result;
 		if ((operand & 0xf00f) === 0x800d) {
-			op0 = exports.get16BitRegister(exports, operand >> 8 & 0xf);
-			op1 = exports.get8BitRegister(exports, operand >> 4 & 0xf) & 7;
+			op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
+			op1 = mcu.get8BitRegister(mcu, operand >> 4 & 0xf) & 7;
 		} else {
-			op0 = exports.get16BitRegister(exports, operand >> 8 & 0xf);
+			op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
 			op1 = operand >> 4 & 7;
 		}
 		result = op0 >> op1;
 		if (op1 > 0) {
 			op1 = op1 - 0x1;
 			if (op0 >> op1 & 0x1) {
-				exports.setC(exports, true);
+				mcu.setC(mcu, true);
 			} else {
-				exports.setC(exports, false);
+				mcu.setC(mcu, false);
 			}
 		}
 		result &= 0xff;
-		exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+		mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 	}
-	l_ERn_obj(exports, operand) {
+	l_ERn_obj(mcu, operand) {
 		let op0;
 		let op1;
 		let ea_inc;
 		let obj_check = operand & 0xf0ff;
 		let result;
 		if (obj_check === 0x9032) { // L ERn, [EA]
-			op1 = exports.dataMemory.get16(exports.dsr, exports.ea & 0xfffe);
+			op1 = mcu.dataMemory.get16(mcu.dsr, mcu.ea & 0xfffe);
 		} else {
 			if (obj_check === 0x9052) { // L ERn, [EA+]
-				exports.ea &= 0xfffe;
-				op1 = exports.dataMemory.get16(exports.dsr, exports.ea);
+				mcu.ea &= 0xfffe;
+				op1 = mcu.dataMemory.get16(mcu.dsr, mcu.ea);
 				ea_inc = 2;
 			} else {
 				if (obj_check === 0x9012) { // L ERn, Dadr
-					op0 = exports.codeMemory.get16(exports.pc);
-					op1 = exports.dataMemory.get16(exports.dsr, op0 & 0xffff);
-					exports.pc += 2;
+					op0 = mcu.codeMemory.get16(mcu.pc);
+					op1 = mcu.dataMemory.get16(mcu.dsr, op0 & 0xffff);
+					mcu.pc += 2;
 				} else {
 					if ((operand & 0xf00f) === 0x9002) { // L ERn, [ERm]
-						let op0 = exports.get16BitRegister(exports, operand >> 4 & 0xf);
+						let op0 = mcu.get16BitRegister(mcu, operand >> 4 & 0xf);
 						op0 &= 0xfffe;
-						op1 = exports.dataMemory.get16(exports.dsr, op0);
+						op1 = mcu.dataMemory.get16(mcu.dsr, op0);
 					} else {
 						if (obj_check === 0x9030 || obj_check === 0x9050) { // L Rn, [EA(+)]
-							op1 = exports.dataMemory.get8(exports.dsr, exports.ea);
+							op1 = mcu.dataMemory.get8(mcu.dsr, mcu.ea);
 							ea_inc = 1;
 						} else {
 							if (obj_check === 0x9010) { // L Rn, Dadr
-								op0 = exports.codeMemory.get16(exports.pc);
-								op1 = exports.dataMemory.get8(exports.dsr, op0);
-								exports.pc += 2;
+								op0 = mcu.codeMemory.get16(mcu.pc);
+								op1 = mcu.dataMemory.get8(mcu.dsr, op0);
+								mcu.pc += 2;
 							} else {
 								if ((operand & 0xf00f) === 0x9000) { // L Rn, [ERm]
-									let op0 = exports.get16BitRegister(exports, operand >> 4 & 0xf);
-									op1 = exports.dataMemory.get16(exports.dsr, op0);
+									let op0 = mcu.get16BitRegister(mcu, operand >> 4 & 0xf);
+									op1 = mcu.dataMemory.get16(mcu.dsr, op0);
 								} else {
 									if (obj_check === 0x9034) { // L XRn, [EA]
-										op1 = exports.dataMemory.get32(exports.dsr, exports.ea & 0xfffe);
+										op1 = mcu.dataMemory.get32(mcu.dsr, mcu.ea & 0xfffe);
 										ea_inc = 4;
 									} else {
 										if (obj_check === 0x9054) { // L XRn, [EA+]
-											exports.ea &= 0xfffe;
-											op1 = exports.dataMemory.get32(exports.dsr, exports.ea);
+											mcu.ea &= 0xfffe;
+											op1 = mcu.dataMemory.get32(mcu.dsr, mcu.ea);
 											ea_inc = 4;
 										} else {
 											if (obj_check === 0x9036) { // L QRn, [EA]
-												let op0 = exports.dataMemory.get64(exports.dsr, exports.ea & 0xfffe);
+												let op0 = mcu.dataMemory.get64(mcu.dsr, mcu.ea & 0xfffe);
 												op0 = op0[0];
 												op1 = op0[1];
 												ea_inc = 8;
 											} else {
 												if (obj_check === 0x9056) { // L QRn, [EA+]
-													exports.ea &= 0xfffe;
-													let op0 = exports.dataMemory.get64(exports.dsr, exports.ea);
+													mcu.ea &= 0xfffe;
+													let op0 = mcu.dataMemory.get64(mcu.dsr, mcu.ea);
 													op0 = op0[0];
 													op1 = op0[1];
 													ea_inc = 8;
 												} else {
 													if ((operand & 0xf00f) === 0xa008) { // L ERn, Disp16[ERm]
-														let erm = exports.get16BitRegister(exports, operand >> 0x4 & 0xf);
-														op0 = exports.codeMemory.get16(exports.pc);
+														let erm = mcu.get16BitRegister(mcu, operand >> 0x4 & 0xf);
+														op0 = mcu.codeMemory.get16(mcu.pc);
 														erm = erm + op0 & 0xfffe;
-														op1 = exports.dataMemory.get16(exports.dsr, erm);
-														exports.pc += 0x2;
+														op1 = mcu.dataMemory.get16(mcu.dsr, erm);
+														mcu.pc += 0x2;
 													} else {
 														if ((operand & 0xf0c0) === 0xb040) { // L ERn, Disp16[FP]
-															let fp = exports.get16BitRegister(exports, 14);
+															let fp = mcu.get16BitRegister(mcu, 14);
 															op0 = operand & 0x3f;
 															if ((op0 & 0x20) !== 0) {
 																op0 |= 0xffffffe0;
 															}
 															fp = fp + op0 & 0xfffe;
-															op1 = exports.dataMemory.get16(exports.dsr, fp);
+															op1 = mcu.dataMemory.get16(mcu.dsr, fp);
 														} else {
 															if ((operand & 0xf0c0) === 0xd040) { // L Rn, Disp16[FP]
-																let fp = exports.get16BitRegister(exports, 14);
+																let fp = mcu.get16BitRegister(mcu, 14);
 																op0 = operand & 0x3f;
 																if ((op0 & 0x20) !== 0) {
 																	op0 |= 0xffffffe0;
 																}
 																fp = fp + op0 & 0xffff;
-																op1 = exports.dataMemory.get8(exports.dsr, fp);
+																op1 = mcu.dataMemory.get8(mcu.dsr, fp);
 															} else {
 																if ((operand & 0xf000) === 0xb000) { // L ERn, Disp6[BP]
-																	let bp = exports.get16BitRegister(exports, 12);
+																	let bp = mcu.get16BitRegister(mcu, 12);
 																	op0 = operand & 0x3f;
 																	if ((op0 & 0x20) !== 0) {
 																		op0 |= 0xffffffe0;
 																	}
 																	bp = bp + op0 & 0xfffe;
-																	op1 = exports.dataMemory.get16(exports.dsr, bp);
+																	op1 = mcu.dataMemory.get16(mcu.dsr, bp);
 																} else {
 																	if ((operand & 0xf000) === 0xd000) { // L Rn, Disp6[BP]
-																		let bp = exports.get16BitRegister(exports, 12);
+																		let bp = mcu.get16BitRegister(mcu, 12);
 																		op0 = operand & 0x3f;
 																		if ((op0 & 0x20) !== 0) {
 																			op0 |= 0xffffffe0;
 																		}
 																		bp = bp + op0 & 0xffff;
-																		op1 = exports.dataMemory.get8(exports.dsr, bp);
+																		op1 = mcu.dataMemory.get8(mcu.dsr, bp);
 																	} else {
 																		if ((operand & 0xf00f) === 0x9008) { // L Rn, Disp16[ERm]
-																			let erm = exports.get16BitRegister(exports, operand >> 4 & 0xf);
-																			op0 = exports.codeMemory.get16(exports.pc);
+																			let erm = mcu.get16BitRegister(mcu, operand >> 4 & 0xf);
+																			op0 = mcu.codeMemory.get16(mcu.pc);
 																			erm = erm + op0 & 0xffff;
-																			op1 = exports.dataMemory.get8(exports.dsr, erm);
-																			exports.pc += 2;
+																			op1 = mcu.dataMemory.get8(mcu.dsr, erm);
+																			mcu.pc += 2;
 																		}
 																	}
 																}
@@ -1598,89 +1598,89 @@ class mcu {
 		}
 		result = op1;
 		if (obj_check === 0x9032 || obj_check === 0x9052 || (operand & 0xf00f) === 0x9002 || (operand & 0xf00f) === 0xa008 || (operand & 0xf0c0) === 0xb040 || (operand & 0xf000) === 0xb000) { // L ERn, obj
-			result = exports.setZeroAndSignFlags_16bit(exports, op0, op1, result);
-			exports.setOperationResult16bit(exports, operand >> 8 & 0xf, result);
+			result = mcu.setZeroAndSignFlags_16bit(mcu, op0, op1, result);
+			mcu.setOperationResult16bit(mcu, operand >> 8 & 0xf, result);
 		} else {
 			if (obj_check === 0x9030 || obj_check === 0x9050 || (operand & 0xf00f) === 0x9000 || obj_check === 0x9010 || obj_check === 0x9012 || (operand & 0xf00f) === 0x9008 || (operand & 0xf000) === 0xd000 || (operand & 0xf0c0) === 0xd040) { // L Rn, obj; L ERn, Dadr
 				result &= 0xff;
-				result = exports.setZeroAndSignFlags_8bit(exports, op0, op1, result);
-				exports.setOperationResult8bit(exports, operand >> 8 & 0xf, result);
+				result = mcu.setZeroAndSignFlags_8bit(mcu, op0, op1, result);
+				mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, result);
 			} else {
 				if (obj_check === 0x9034 || obj_check === 0x9054) { // L XRn, obj
-					result = exports.setZeroAndSignFlags_32bit(exports, op0, op1, result);
-					exports.setOperationResult32bit(exports, operand >> 8 & 0xf, result);
+					result = mcu.setZeroAndSignFlags_32bit(mcu, op0, op1, result);
+					mcu.setOperationResult32bit(mcu, operand >> 8 & 0xf, result);
 				} else if (obj_check === 0x9036 || obj_check === 0x9056) { // L QRn, obj
-					exports.setZeroAndSignFlags_64bit(exports, op0, op1, result);
-					exports.setOperationResult64bit(exports, operand >> 8 & 0xf, op0, op1);
+					mcu.setZeroAndSignFlags_64bit(mcu, op0, op1, result);
+					mcu.setOperationResult64bit(mcu, operand >> 8 & 0xf, op0, op1);
 				}
 			}
 		}
 		if (obj_check === 0x9052 || obj_check === 0x9050 || obj_check === 0x9054 || obj_check === 0x9056) { // Increment EA
-			exports.ea += ea_inc;
+			mcu.ea += ea_inc;
 		}
 	}
-	st_ERn_obj(exports, operand) {
+	st_ERn_obj(mcu, operand) {
 		let op0;
 		let op1;
 		let obj_check = operand & 0xf0ff;
 		let ea_inc;
 		if (obj_check === 0x9033) { // ST ERn, [EA]
-			op0 = exports.get16BitRegister(exports, operand >> 8 & 0xf);
-			op1 = exports.ea & 0xfffe;
+			op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
+			op1 = mcu.ea & 0xfffe;
 			ea_inc = 2;
 		} else {
 			if (obj_check === 0x9053) { // ST ERn, [EA+]
-				op0 = exports.get16BitRegister(exports, operand >> 8 & 0xf);
-				exports.ea &= 0xfffe;
-				op1 = exports.ea;
+				op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
+				mcu.ea &= 0xfffe;
+				op1 = mcu.ea;
 				ea_inc = 2;
 			} else {
 				if (obj_check === 0x9013) { // ST ERn, Dadr
-					op0 = exports.get16BitRegister(exports, operand >> 8 & 0xf);
-					op1 = exports.codeMemory.get16(exports.pc);
+					op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
+					op1 = mcu.codeMemory.get16(mcu.pc);
 					ea_inc = 2;
-					exports.pc += 2;
+					mcu.pc += 2;
 				} else {
 					if ((operand & 0xf00f) === 0x9003) { // ST ERn, [ERm]
-						op0 = exports.get16BitRegister(exports, operand >> 8 & 0xf);
-						op1 = exports.get16BitRegister(exports, operand >> 4 & 0xf);
+						op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
+						op1 = mcu.get16BitRegister(mcu, operand >> 4 & 0xf);
 						ea_inc = 2;
 					} else {
 						if (obj_check === 0x9031 || obj_check === 0x9051) { // ST Rn, [EA(+)]
-							op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-							op1 = exports.ea;
+							op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+							op1 = mcu.ea;
 							ea_inc = 1;
 						} else {
 							if (obj_check === 0x9011) { // ST Rn, Dadr
-								op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-								op1 = exports.codeMemory.get16(exports.pc);
+								op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+								op1 = mcu.codeMemory.get16(mcu.pc);
 								ea_inc = 1;
-								exports.pc += 2;
+								mcu.pc += 2;
 							} else {
 								if ((operand & 0xf00f) === 0x9001) { // ST Rn, [ERm]
-									op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-									op1 = exports.get16BitRegister(exports, operand >> 4 & 0xf);
+									op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+									op1 = mcu.get16BitRegister(mcu, operand >> 4 & 0xf);
 									ea_inc = 1;
 								} else {
 									if ((operand & 0xf00f) === 0xa009) { // ST ERn, Disp16[ERm]
-										op0 = exports.get16BitRegister(exports, operand >> 8 & 0xf);
-										let erm = exports.get16BitRegister(exports, operand >> 0x4 & 0xf);
-										op1 = exports.codeMemory.get16(exports.pc);
+										op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
+										let erm = mcu.get16BitRegister(mcu, operand >> 0x4 & 0xf);
+										op1 = mcu.codeMemory.get16(mcu.pc);
 										op1 = erm + op1 & 0xfffe;
 										ea_inc = 2;
-										exports.pc += 2;
+										mcu.pc += 2;
 									} else {
 										if ((operand & 0xf00f) === 0x9009) { // ST ERn, Disp16[ERm]
-											op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-											let erm = exports.get16BitRegister(exports, operand >> 0x4 & 0xf);
-											op1 = exports.codeMemory.get16(exports.pc);
+											op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+											let erm = mcu.get16BitRegister(mcu, operand >> 0x4 & 0xf);
+											op1 = mcu.codeMemory.get16(mcu.pc);
 											op1 = erm + op1 & 0xffff;
 											ea_inc = 1;
-											exports.pc += 2;
+											mcu.pc += 2;
 										} else {
 											if ((operand & 0xf0c0) === 0xb080) { // ST ERn, Disp6[BP]
-												op0 = exports.get16BitRegister(exports, operand >> 8 & 0xf);
-												let bp = exports.get16BitRegister(exports, 12);
+												op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
+												let bp = mcu.get16BitRegister(mcu, 12);
 												op1 = operand & 0x3f;
 												if ((op1 & 0x20) !== 0) {
 													op1 |= 0xffffffe0;
@@ -1689,8 +1689,8 @@ class mcu {
 												ea_inc = 2;
 											} else {
 												if ((operand & 0xf0c0) === 0xd080) { // ST Rn, Disp6[BP]
-													op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-													let bp = exports.get16BitRegister(exports, 12);
+													op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+													let bp = mcu.get16BitRegister(mcu, 12);
 													op1 = operand & 0x3f;
 													if ((op1 & 0x20) !== 0) {
 														op1 |= 0xffffffe0;
@@ -1699,8 +1699,8 @@ class mcu {
 													ea_inc = 1;
 												} else {
 													if ((operand & 0xf0c0) === 0xd0c0) { // ST Rn, Disp6[FP]
-														op0 = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-														let fp = exports.get16BitRegister(exports, 14);
+														op0 = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+														let fp = mcu.get16BitRegister(mcu, 14);
 														op1 = operand & 0x3f;
 														if ((op1 & 0x20) !== 0) {
 															op1 |= 0xffffffe0;
@@ -1709,8 +1709,8 @@ class mcu {
 														ea_inc = 1;
 													} else {
 														if ((operand & 0xf0c0) === 0xb0c0) { // ST ERn, Disp6[FP]
-															op0 = exports.get16BitRegister(exports, operand >> 8 & 0xf);
-															let fp = exports.get16BitRegister(exports, 14);
+															op0 = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
+															let fp = mcu.get16BitRegister(mcu, 14);
 															op1 = operand & 0x3f;
 															if ((op1 & 0x20) !== 0) {
 																op1 |= 0xffffffe0;
@@ -1719,24 +1719,24 @@ class mcu {
 															ea_inc = 2;
 														} else {
 															if (obj_check === 0x9035) { // ST XRn, [EA]
-																op0 = exports.get32BitRegister(exports, operand >> 8 & 0xf);
-																op1 = exports.ea & 0xfffe;
+																op0 = mcu.get32BitRegister(mcu, operand >> 8 & 0xf);
+																op1 = mcu.ea & 0xfffe;
 																ea_inc = 4;
 															} else {
 																if (obj_check === 0x9055) { // ST XRn, [EA+]
-																	op0 = exports.get32BitRegister(exports, operand >> 8 & 0xf);
-																	exports.ea &= 0xfffe;
-																	op1 = exports.ea;
+																	op0 = mcu.get32BitRegister(mcu, operand >> 8 & 0xf);
+																	mcu.ea &= 0xfffe;
+																	op1 = mcu.ea;
 																	ea_inc = 4;
 																} else {
 																	if (obj_check === 0x9037) { // ST QRn, [EA]
-																		op0 = exports.get64BitRegister(exports, operand >> 8 & 0xf);
-																		op1 = exports.ea & 0xfffe;
+																		op0 = mcu.get64BitRegister(mcu, operand >> 8 & 0xf);
+																		op1 = mcu.ea & 0xfffe;
 																		ea_inc = 8;
 																	} else if (obj_check === 0x9057) { // ST QRn, [EA+]
-																		op0 = exports.get64BitRegister(exports, operand >> 8 & 0xf);
-																		exports.ea &= 0xfffe;
-																		op1 = exports.ea;
+																		op0 = mcu.get64BitRegister(mcu, operand >> 8 & 0xf);
+																		mcu.ea &= 0xfffe;
+																		op1 = mcu.ea;
 																		ea_inc = 8;
 																	}
 																}
@@ -1756,7 +1756,7 @@ class mcu {
 		}
 		if (typeof op0 === "number") { // Rn, ERn, XRn
 			for (let i = 0; i < ea_inc; i++) {
-				exports.dataMemory.set8(exports.dsr, op0 >> 8 * i & 0xff, op1 + i);
+				mcu.dataMemory.set8(mcu.dsr, op0 >> 8 * i & 0xff, op1 + i);
 			}
 			if (constants.Constants.DEBUG_DISPLAY_ADDRESSES && op1 > constants.Constants.DISPLAY_BUFFER_START_ADDRESS && op1 < constants.Constants.DISPLAY_BUFFER_END_ADDRESS) {
 				console.log("wrote 0x" + op0.toString(16) + " to display address 0x" + op1.toString(16));
@@ -1766,7 +1766,7 @@ class mcu {
 			}
 		} else { // QRn
 			for (let i = 0; i < 4; i++) {
-				exports.dataMemory.set8(exports.dsr, op0[0] >> 8 * i & 0xff, op1 + i);
+				mcu.dataMemory.set8(mcu.dsr, op0[0] >> 8 * i & 0xff, op1 + i);
 			}
 			if (constants.Constants.DEBUG_DISPLAY_ADDRESSES && op1 > constants.Constants.DISPLAY_BUFFER_START_ADDRESS && op1 < constants.Constants.DISPLAY_BUFFER_END_ADDRESS) {
 				console.log("wrote 0x" + op0[0].toString(16) + " to display address 0x" + op1.toString(16));
@@ -1775,7 +1775,7 @@ class mcu {
 				console.log("wrote 0x" + op0.toString(16) + " to display address 0x" + op1.toString(16));
 			}
 			for (let i = 4; i < 8; i++) {
-				exports.dataMemory.set8(exports.dsr, op0[1] >> 8 * i & 0xff, op1 + i);
+				mcu.dataMemory.set8(mcu.dsr, op0[1] >> 8 * i & 0xff, op1 + i);
 			}
 			if (constants.Constants.DEBUG_DISPLAY_ADDRESSES && op1 > constants.Constants.DISPLAY_BUFFER_START_ADDRESS && op1 < constants.Constants.DISPLAY_BUFFER_END_ADDRESS) {
 				console.log("wrote 0x" + op0[1].toString(16) + " to display address 0x" + op1.toString(16));
@@ -1785,11 +1785,11 @@ class mcu {
 			}
 		}
 		if (obj_check === 0x9053 || obj_check === 0x9051 || obj_check === 0x9055 || obj_check === 0x9057) { // Increment EA
-			exports.ea += ea_inc;
+			mcu.ea += ea_inc;
 		}
 	}
-	add_SP_imm8(exports, operand) {
-		let old_sp = exports.sp;
+	add_SP_imm8(mcu, operand) {
+		let old_sp = mcu.sp;
 		let imm8 = operand & 0xff;
 		if ((imm8 & 0x80) === 0) {
 			imm8 &= 0x7f;
@@ -1798,152 +1798,152 @@ class mcu {
 		}
 		let new_sp = old_sp + imm8;
 		new_sp &= 0xffff;
-		exports.sp = new_sp & 0xfffe;
+		mcu.sp = new_sp & 0xfffe;
 	}
-	pushValueToStack(exports, val, size) {
+	pushValueToStack(mcu, val, size) {
 		let i;
 		for (i = 0; i < size; i++) {
-			exports.sp--;
-			exports.dataMemory.set8(0, val >> 8 * (size - i - 1) & 0xff, exports.sp);
+			mcu.sp--;
+			mcu.dataMemory.set8(0, val >> 8 * (size - i - 1) & 0xff, mcu.sp);
 		}
 		if (constants.Constants.DEBUG_PUSH_POP) {
 			console.log("*****-*-*-*-*-*-*-*-*-*-*-*-*-  pushed something " + val.toString(16));
 		}
 	}
-	popValueFromStack(exports, size) {
+	popValueFromStack(mcu, size) {
 		var val = 0;
 		for (let i = size - 1; i >= 0; i--) {
-			val |= exports.dataMemory.get8(0, exports.sp) << 8 * (size - i - 1);
-			exports.sp++;
+			val |= mcu.dataMemory.get8(0, mcu.sp) << 8 * (size - i - 1);
+			mcu.sp++;
 		}
 		if (constants.Constants.DEBUG_PUSH_POP) {
 			console.log("*****-*-*-*-*-*-*-*-*-*-*-*-*-  popped something " + val.toString(16));
 		}
 		return val;
 	}
-	push_obj(exports, operand) {
+	push_obj(mcu, operand) {
 		let reg_list;
 		let pushval;
 		let obj_check = operand & 0xf0ff;
 		if (obj_check === 0xf04e) { // PUSH Rn
-			pushval = exports.get8BitRegister(exports, operand >> 8 & 0xf);
-			exports.pushValueToStack(exports, pushval, 2);
+			pushval = mcu.get8BitRegister(mcu, operand >> 8 & 0xf);
+			mcu.pushValueToStack(mcu, pushval, 2);
 		} else {
 			if (obj_check === 0xf05e) { // PUSH ERn
-				pushval = exports.get16BitRegister(exports, operand >> 8 & 0xf);
-				exports.pushValueToStack(exports, pushval, 2);
+				pushval = mcu.get16BitRegister(mcu, operand >> 8 & 0xf);
+				mcu.pushValueToStack(mcu, pushval, 2);
 			} else {
 				if (obj_check === 0xf06e) { // PUSH XRn
-					pushval = exports.get32BitRegister(exports, operand >> 8 & 0xf);
-					exports.pushValueToStack(exports, pushval, 4);
+					pushval = mcu.get32BitRegister(mcu, operand >> 8 & 0xf);
+					mcu.pushValueToStack(mcu, pushval, 4);
 				} else {
 					if (obj_check === 0xf07e) { // PUSH QRn
-						pushval = exports.get64BitRegister(exports, operand >> 8 & 0xf);
-						exports.pushValueToStack(exports, pushval[1], 4);
-						exports.pushValueToStack(exports, pushval[0], 4);
+						pushval = mcu.get64BitRegister(mcu, operand >> 8 & 0xf);
+						mcu.pushValueToStack(mcu, pushval[1], 4);
+						mcu.pushValueToStack(mcu, pushval[0], 4);
 					} else if (obj_check === 0xf0ce) { // PUSH register_list
 						reg_list = operand >> 8 & 0xff;
-						if ((reg_list & exports.NXU16_PUSH_REGISTER_LIST_ELR) !== 0) {
-							exports.pushValueToStack(exports, exports.ecsr1, 2);
-							exports.pushValueToStack(exports, exports.elr1, 2);
+						if ((reg_list & mcu.NXU16_PUSH_REGISTER_LIST_ELR) !== 0) {
+							mcu.pushValueToStack(mcu, mcu.ecsr1, 2);
+							mcu.pushValueToStack(mcu, mcu.elr1, 2);
 						}
-						if ((reg_list & exports.NXU16_PUSH_REGISTER_LIST_PSW) !== 0) {
-							exports.pushValueToStack(exports, exports.psw, 2);
+						if ((reg_list & mcu.NXU16_PUSH_REGISTER_LIST_PSW) !== 0) {
+							mcu.pushValueToStack(mcu, mcu.psw, 2);
 						}
-						if ((reg_list & exports.NXU16_PUSH_REGISTER_LIST_LR) !== 0) {
-							exports.pushValueToStack(exports, exports.lcsr, 2);
-							exports.pushValueToStack(exports, exports.lr & 0xffff, 2);
+						if ((reg_list & mcu.NXU16_PUSH_REGISTER_LIST_LR) !== 0) {
+							mcu.pushValueToStack(mcu, mcu.lcsr, 2);
+							mcu.pushValueToStack(mcu, mcu.lr & 0xffff, 2);
 							if (constants.Constants.DEBUG_PUSH_POP) {
-								console.log("*****-*-*-*-*-*-*-*-*-*-*-*-*-  pushed lr=0x" + exports.lr.toString(16));
+								console.log("*****-*-*-*-*-*-*-*-*-*-*-*-*-  pushed lr=0x" + mcu.lr.toString(16));
 							}
 						}
-						if ((reg_list & exports.NXU16_PUSH_REGISTER_LIST_EA) !== 0) {
-							exports.pushValueToStack(exports, exports.ea, 2);
+						if ((reg_list & mcu.NXU16_PUSH_REGISTER_LIST_EA) !== 0) {
+							mcu.pushValueToStack(mcu, mcu.ea, 2);
 						}
 					}
 				}
 			}
 		}
 	}
-	use_DSR(exports, operand) {
+	use_DSR(mcu, operand) {
 		if (operand === 0xfe9f) {
-			exports.dsr = exports.currentDSR;
+			mcu.dsr = mcu.currentDSR;
 		} else {
-			exports.currentDSR = operand & 0xff;
-			exports.dsr = exports.currentDSR;
+			mcu.currentDSR = operand & 0xff;
+			mcu.dsr = mcu.currentDSR;
 		}
-		let next_op = exports.codeMemory.get16(exports.pc);
-		exports.pc += 0x2;
-		exports.operation[next_op](exports, next_op);
-		exports.dsr = 0;
+		let next_op = mcu.codeMemory.get16(mcu.pc);
+		mcu.pc += 0x2;
+		mcu.operation[next_op](mcu, next_op);
+		mcu.dsr = 0;
 	}
-	use_DSR_fromRegister(exports, operand) {
+	use_DSR_fromRegister(mcu, operand) {
 		let d = operand >> 0x4 & 0xf;
-		exports.currentDSR = exports.get8BitRegister(exports, d);
-		exports.dsr = exports.currentDSR;
-		let next_op = exports.codeMemory.get16(exports.pc);
-		exports.pc += 0x2;
-		exports.operation[next_op](exports, next_op);
-		exports.dsr = 0;
+		mcu.currentDSR = mcu.get8BitRegister(mcu, d);
+		mcu.dsr = mcu.currentDSR;
+		let next_op = mcu.codeMemory.get16(mcu.pc);
+		mcu.pc += 0x2;
+		mcu.operation[next_op](mcu, next_op);
+		mcu.dsr = 0;
 	}
-	pop_obj(exports, operand) {
+	pop_obj(mcu, operand) {
 		let reg_list;
 		let popval;
 		let obj_check = operand & 0xf0ff;
 		if (obj_check === 0xf01e) { // POP Rn
-			popval = exports.popValueFromStack(exports, 2);
-			exports.setOperationResult16bit(exports, operand >> 8 & 0xf, popval);
+			popval = mcu.popValueFromStack(mcu, 2);
+			mcu.setOperationResult16bit(mcu, operand >> 8 & 0xf, popval);
 		} else {
 			if (obj_check === 0xf00e) { // POP ERn
-				popval = exports.popValueFromStack(exports, 2);
-				exports.setOperationResult8bit(exports, operand >> 8 & 0xf, popval & 0xff);
+				popval = mcu.popValueFromStack(mcu, 2);
+				mcu.setOperationResult8bit(mcu, operand >> 8 & 0xf, popval & 0xff);
 			} else {
 				if (obj_check === 0xf02e) { // POP XRn
-					popval = exports.popValueFromStack(exports, 4);
-					exports.setOperationResult32bit(exports, operand >> 8 & 0xf, popval);
+					popval = mcu.popValueFromStack(mcu, 4);
+					mcu.setOperationResult32bit(mcu, operand >> 8 & 0xf, popval);
 				} else {
 					if (obj_check === 0xf03e) { // POP QRn
 						if ((operand >> 8 & 0xf) === 0) {
-							exports.r0 = exports.dataMemory.get8(exports.dsr, exports.sp++);
-							exports.r1 = exports.dataMemory.get8(exports.dsr, exports.sp++);
-							exports.r2 = exports.dataMemory.get8(exports.dsr, exports.sp++);
-							exports.r3 = exports.dataMemory.get8(exports.dsr, exports.sp++);
-							exports.r4 = exports.dataMemory.get8(exports.dsr, exports.sp++);
-							exports.r5 = exports.dataMemory.get8(exports.dsr, exports.sp++);
-							exports.r6 = exports.dataMemory.get8(exports.dsr, exports.sp++);
-							exports.r7 = exports.dataMemory.get8(exports.dsr, exports.sp++);
+							mcu.r0 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
+							mcu.r1 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
+							mcu.r2 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
+							mcu.r3 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
+							mcu.r4 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
+							mcu.r5 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
+							mcu.r6 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
+							mcu.r7 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
 						} else {
-							exports.r8 = exports.dataMemory.get8(exports.dsr, exports.sp++);
-							exports.r9 = exports.dataMemory.get8(exports.dsr, exports.sp++);
-							exports.r10 = exports.dataMemory.get8(exports.dsr, exports.sp++);
-							exports.r11 = exports.dataMemory.get8(exports.dsr, exports.sp++);
-							exports.r12 = exports.dataMemory.get8(exports.dsr, exports.sp++);
-							exports.r13 = exports.dataMemory.get8(exports.dsr, exports.sp++);
-							exports.r14 = exports.dataMemory.get8(exports.dsr, exports.sp++);
-							exports.r15 = exports.dataMemory.get8(exports.dsr, exports.sp++);
+							mcu.r8 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
+							mcu.r9 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
+							mcu.r10 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
+							mcu.r11 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
+							mcu.r12 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
+							mcu.r13 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
+							mcu.r14 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
+							mcu.r15 = mcu.dataMemory.get8(mcu.dsr, mcu.sp++);
 						}
 					} else {
 						if (obj_check === 0xf08e) { // POP register_list
 							reg_list = operand >> 8 & 0xff;
-							if ((reg_list & exports.NXU16_POP_REGISTER_LIST_EA) !== 0) {
-								exports.ea = exports.popValueFromStack(exports, 2);
+							if ((reg_list & mcu.NXU16_POP_REGISTER_LIST_EA) !== 0) {
+								mcu.ea = mcu.popValueFromStack(mcu, 2);
 							}
-							if ((reg_list & exports.NXU16_POP_REGISTER_LIST_LR) !== 0) {
-								exports.ecsr = exports.popValueFromStack(exports, 2) & 0x3;
-								exports.pc = exports.ecsr << 16 | exports.popValueFromStack(exports, 0x2);
+							if ((reg_list & mcu.NXU16_POP_REGISTER_LIST_LR) !== 0) {
+								mcu.ecsr = mcu.popValueFromStack(mcu, 2) & 0x3;
+								mcu.pc = mcu.ecsr << 16 | mcu.popValueFromStack(mcu, 0x2);
 							}
-							if ((reg_list & exports.NXU16_POP_REGISTER_LIST_PSW) !== 0) {
-								exports.psw = exports.popValueFromStack(exports, 2) & 0xff;
+							if ((reg_list & mcu.NXU16_POP_REGISTER_LIST_PSW) !== 0) {
+								mcu.psw = mcu.popValueFromStack(mcu, 2) & 0xff;
 							}
-							if ((reg_list & exports.NXU16_POP_REGISTER_LIST_PC) !== 0) {
-								let pc = exports.popValueFromStack(exports, 2);
+							if ((reg_list & mcu.NXU16_POP_REGISTER_LIST_PC) !== 0) {
+								let pc = mcu.popValueFromStack(mcu, 2);
 								if (constants.Constants.DEBUG_PUSH_POP) {
-									console.log("*****-*-*-*-*-*-*-*-*-*-*-*-*-  popped pc=" + exports.ecsr + ":" + exports.pc.toString(16));
+									console.log("*****-*-*-*-*-*-*-*-*-*-*-*-*-  popped pc=" + mcu.ecsr + ":" + mcu.pc.toString(16));
 									console.log("writing pc= 0x" + pc.toString(16));
 								}
-								exports.pc = pc;
-								exports.ecsr = exports.popValueFromStack(exports, 2) & 0x3;
-								exports.pc = exports.ecsr << 16 | exports.pc;
+								mcu.pc = pc;
+								mcu.ecsr = mcu.popValueFromStack(mcu, 2) & 0x3;
+								mcu.pc = mcu.ecsr << 16 | mcu.pc;
 							}
 						}
 					}
@@ -1951,32 +1951,32 @@ class mcu {
 			}
 		}
 	}
-	lea_obj(exports, operand) {
+	lea_obj(mcu, operand) {
 		let obj_check = operand & 0xf00f;
 		if (obj_check === 0xf00a) { // LEA [ERm]
-			let erm = exports.get16BitRegister(exports, operand >> 0x4 & 0xf);
-			exports.ea = erm;
+			let erm = mcu.get16BitRegister(mcu, operand >> 0x4 & 0xf);
+			mcu.ea = erm;
 		} else {
 			if (obj_check === 0xf00b) { // LEA Disp16[ERm]
-				let erm = exports.get16BitRegister(exports, operand >> 0x4 & 0xf);
-				let disp16 = exports.codeMemory.get16(exports.pc);
+				let erm = mcu.get16BitRegister(mcu, operand >> 0x4 & 0xf);
+				let disp16 = mcu.codeMemory.get16(mcu.pc);
 				erm = erm + disp16 & 0xffff;
-				exports.ea = erm;
-				exports.pc += 0x2;
+				mcu.ea = erm;
+				mcu.pc += 0x2;
 			} else {
 				if (obj_check === 0xf00c) { // LEA Dadr
-					let dadr = exports.codeMemory.get16(exports.pc);
-					exports.ea = dadr;
-					exports.pc += 0x2;
+					let dadr = mcu.codeMemory.get16(mcu.pc);
+					mcu.ea = dadr;
+					mcu.pc += 0x2;
 				}
 			}
 		}
 	}
-	daa_obj(exports, operand) {
-		const cArr = (exports.psw & exports.NXU16_MASK_C_FLAG) !== 0;
-		const half_cArr = (exports.psw & exports.NXU16_MASK_HC_FLAG) !== 0;
+	daa_obj(mcu, operand) {
+		const cArr = (mcu.psw & mcu.NXU16_MASK_C_FLAG) !== 0;
+		const half_cArr = (mcu.psw & mcu.NXU16_MASK_HC_FLAG) !== 0;
 		const n = operand >> 8 & 0xf;
-		const rn = exports.get8BitRegister(exports, n);
+		const rn = mcu.get8BitRegister(mcu, n);
 		const hi_nib = (rn & 0xf0) >> 0x4;
 		const lo_nib = rn & 0xf;
 		let add_val;
@@ -1993,30 +1993,30 @@ class mcu {
 		}
 		const result = rn + add_val & 0xff;
 		if (result & 0x80) {
-			exports.psw |= exports.NXU16_MASK_S_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_S_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_S_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_S_FLAG;
 		}
 		if (result === 0) {
-			exports.psw |= exports.NXU16_MASK_Z_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_Z_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_Z_FLAG;
 		}
 		if (!cArr && (hi_nib > 0x9 || !half_cArr && hi_nib >= 0x9 && lo_nib > 0x9)) {
-			exports.psw |= exports.NXU16_MASK_C_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_C_FLAG;
 		}
 		if ((result ^ rn ^ add_val) & 0x10) {
-			exports.psw |= exports.NXU16_MASK_HC_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_HC_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_HC_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_HC_FLAG;
 		}
-		exports.setOperationResult8bit(exports, n, result);
+		mcu.setOperationResult8bit(mcu, n, result);
 	}
-	das_obj(exports, operand) {
-		const cArr = (exports.psw & exports.NXU16_MASK_C_FLAG) !== 0;
-		const half_cArr = (exports.psw & exports.NXU16_MASK_HC_FLAG) !== 0;
+	das_obj(mcu, operand) {
+		const cArr = (mcu.psw & mcu.NXU16_MASK_C_FLAG) !== 0;
+		const half_cArr = (mcu.psw & mcu.NXU16_MASK_HC_FLAG) !== 0;
 		const n = operand >> 8 & 0xf;
-		const rn = exports.get8BitRegister(exports, n);
+		const rn = mcu.get8BitRegister(mcu, n);
 		const hi_nib = (rn & 0xf0) >> 0x4;
 		const lo_nib = rn & 0xf;
 		let sub_val;
@@ -2033,133 +2033,133 @@ class mcu {
 		}
 		const result = rn - sub_val & 0xff;
 		if (result & 0x80) {
-			exports.psw |= exports.NXU16_MASK_S_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_S_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_S_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_S_FLAG;
 		}
 		if (result === 0) {
-			exports.psw |= exports.NXU16_MASK_Z_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_Z_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_Z_FLAG;
 		}
 		if ((rn & 0xf) - (sub_val & 0xf) & -16) {
-			exports.psw |= exports.NXU16_MASK_HC_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_HC_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_HC_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_HC_FLAG;
 		}
-		exports.setOperationResult8bit(exports, n, result);
+		mcu.setOperationResult8bit(mcu, n, result);
 	}
-	neg_obj(exports, operand) {
+	neg_obj(mcu, operand) {
 		const n = operand >> 8 & 0xf;
-		const rn = exports.get8BitRegister(exports, n);
+		const rn = mcu.get8BitRegister(mcu, n);
 		let result = 0 - rn;
-		result = exports.setFlagsFor8bitSub(exports, 0, rn, result);
-		exports.setOperationResult8bit(exports, n, result);
+		result = mcu.setFlagsFor8bitSub(mcu, 0, rn, result);
+		mcu.setOperationResult8bit(mcu, n, result);
 	}
-	mul_ERn_Rm(exports, operand) {
+	mul_ERn_Rm(mcu, operand) {
 		const n = operand >> 8 & 0xf;
 		const m = operand >> 4 & 0xf;
-		const rn = exports.get8BitRegister(exports, n);
-		const rm = exports.get8BitRegister(exports, m);
+		const rn = mcu.get8BitRegister(mcu, n);
+		const rm = mcu.get8BitRegister(mcu, m);
 		const result = rn * rm;
 		if (result === 0) {
-			exports.psw |= exports.NXU16_MASK_Z_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_Z_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_Z_FLAG;
 		}
-		exports.setOperationResult16bit(exports, operand >> 8 & 0xf, result);
+		mcu.setOperationResult16bit(mcu, operand >> 8 & 0xf, result);
 	}
-	div_ERn_Rm(exports, operand) {
+	div_ERn_Rm(mcu, operand) {
 		const n = operand >> 8 & 0xf;
 		const m = operand >> 4 & 0xf;
-		const rn = exports.get16BitRegister(exports, n);
-		const rm = exports.get8BitRegister(exports, m);
+		const rn = mcu.get16BitRegister(mcu, n);
+		const rm = mcu.get8BitRegister(mcu, m);
 		if (rm === 0) {
-			exports.setC(exports, true);
+			mcu.setC(mcu, true);
 		} else {
 			const result = Math.floor(rn / rm);
 			const remainder = rn % rm >>> 0;
-			exports.setC(exports, false);
+			mcu.setC(mcu, false);
 			if (result === 0) {
-				exports.psw |= exports.NXU16_MASK_Z_FLAG;
+				mcu.psw |= mcu.NXU16_MASK_Z_FLAG;
 			} else {
-				exports.psw &= ~exports.NXU16_MASK_Z_FLAG;
+				mcu.psw &= ~mcu.NXU16_MASK_Z_FLAG;
 			}
-			exports.setOperationResult16bit(exports, operand >> 8 & 0xf, result);
-			exports.setOperationResult8bit(exports, m, remainder);
+			mcu.setOperationResult16bit(mcu, operand >> 8 & 0xf, result);
+			mcu.setOperationResult8bit(mcu, m, remainder);
 		}
 	}
-	sb_rn(exports, operand) {
+	sb_rn(mcu, operand) {
 		let bit = operand >> 4 & 7;
 		let n;
 		let op0;
 		let obj_check = operand & 0xf08f;
 		if (obj_check === 0xa000) { // SB Rn.bit_offset
 			n = operand >> 8 & 0xf;
-			op0 = exports.get8BitRegister(exports, n);
+			op0 = mcu.get8BitRegister(mcu, n);
 		} else if (obj_check === 0xa080) { // SB Dadr.bit_offset
-			n = exports.codeMemory.get16(exports.pc);
-			op0 = exports.dataMemory.get8(exports.dsr, n);
-			exports.pc += 2;
+			n = mcu.codeMemory.get16(mcu.pc);
+			op0 = mcu.dataMemory.get8(mcu.dsr, n);
+			mcu.pc += 2;
 		}
 		let bit_mask = 1 << bit;
 		if ((op0 & bit_mask) === 0) {
-			exports.setZ(exports, true);
+			mcu.setZ(mcu, true);
 		} else {
-			exports.setZ(exports, false);
+			mcu.setZ(mcu, false);
 		}
 		op0 |= bit_mask;
 		if (obj_check === 0xa000) { // SB Rn.bit_offset
-			exports.setOperationResult8bit(exports, n, op0);
+			mcu.setOperationResult8bit(mcu, n, op0);
 		} else if (obj_check === 0xa080) { // SB Dadr.bit_offset
-			exports.dataMemory.set8(exports.dsr, op0, n);
+			mcu.dataMemory.set8(mcu.dsr, op0, n);
 		}
 	}
-	rb_rn(exports, operand) {
+	rb_rn(mcu, operand) {
 		let bit = operand >> 4 & 7;
 		let n;
 		let op0;
 		let obj_check = operand & 0xf08f;
 		if (obj_check === 0xa002) { // RB Rn.bit_offset
 			n = operand >> 8 & 0xf;
-			op0 = exports.get8BitRegister(exports, n);
+			op0 = mcu.get8BitRegister(mcu, n);
 		} else if (obj_check === 0xa082) { // RB Dadr.bit_offset
-			n = exports.codeMemory.get16(exports.pc);
-			op0 = exports.dataMemory.get8(exports.dsr, n);
-			exports.pc += 0x2;
+			n = mcu.codeMemory.get16(mcu.pc);
+			op0 = mcu.dataMemory.get8(mcu.dsr, n);
+			mcu.pc += 0x2;
 		}
 		if ((op0 >> bit & 0x1) === 0) {
-			exports.psw |= exports.NXU16_MASK_Z_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_Z_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_Z_FLAG;
 		}
 		op0 &= ~(0x1 << bit) & 0xff;
 		if (obj_check === 0xa002) { // RB Rn.bit_offset
-			exports.setOperationResult8bit(exports, n, op0);
+			mcu.setOperationResult8bit(mcu, n, op0);
 		} else if (obj_check === 0xa082) { // RB Dadr.bit_offset
-			exports.dataMemory.set8(exports.dsr, op0, n);
+			mcu.dataMemory.set8(mcu.dsr, op0, n);
 		}
 	}
-	tb_rn(exports, operand) {
+	tb_rn(mcu, operand) {
 		let bit = operand >> 0x4 & 0x7;
 		let n;
 		let op0;
 		let obj_check = operand & 0xf08f;
 		if (obj_check === 0xa001) { // TB Rn.bit_offset
 			n = operand >> 8 & 0xf;
-			op0 = exports.get8BitRegister(exports, n);
+			op0 = mcu.get8BitRegister(mcu, n);
 		} else if (obj_check === 0xa081) { // TB Rn.bit_offset
-			n = exports.codeMemory.get16(exports.pc);
-			op0 = exports.dataMemory.get8(exports.dsr, n);
-			exports.pc += 0x2;
+			n = mcu.codeMemory.get16(mcu.pc);
+			op0 = mcu.dataMemory.get8(mcu.dsr, n);
+			mcu.pc += 0x2;
 		}
 		if ((op0 >> bit & 0x1) === 0) {
-			exports.psw |= exports.NXU16_MASK_Z_FLAG;
+			mcu.psw |= mcu.NXU16_MASK_Z_FLAG;
 		} else {
-			exports.psw &= ~exports.NXU16_MASK_Z_FLAG;
+			mcu.psw &= ~mcu.NXU16_MASK_Z_FLAG;
 		}
 	}
-	b_conditional(exports, operand) {
+	b_conditional(mcu, operand) {
 		var jump = false;
 		var radr = operand & 0xff;
 		var cond = operand >> 8 & 0xf;
@@ -2169,59 +2169,59 @@ class mcu {
 		radr *= 0x2;
 		switch (cond) {
 			case 0: // BGE/BNC
-				jump = !exports.isCSet(exports);
+				jump = !mcu.isCSet(mcu);
 				break;
 			case 1: // BLT/BCY
-				jump = exports.isCSet(exports);
+				jump = mcu.isCSet(mcu);
 				break;
 			case 2: // BGT
-				jump = exports.isCSet(exports) === false && exports.isZSet(exports) === false;
+				jump = mcu.isCSet(mcu) === false && mcu.isZSet(mcu) === false;
 				break;
 			case 3: // BLE
-				jump = exports.isCSet(exports) === true || exports.isZSet(exports) === true;
+				jump = mcu.isCSet(mcu) === true || mcu.isZSet(mcu) === true;
 				break;
 			case 4: // BGES
-				var ov = exports.isOVSet(exports);
-				var s = exports.isSSet(exports);
+				var ov = mcu.isOVSet(mcu);
+				var s = mcu.isSSet(mcu);
 				jump = !(s !== ov);
 				break;
 			case 5: // BLTS
-				var ov = exports.isOVSet(exports);
-				var s = exports.isSSet(exports);
+				var ov = mcu.isOVSet(mcu);
+				var s = mcu.isSSet(mcu);
 				jump = s !== ov;
 				break;
 			case 6: // BGTS
-				var ov = exports.isOVSet(exports);
-				var s = exports.isSSet(exports);
-				var z = exports.isZSet(exports);
+				var ov = mcu.isOVSet(mcu);
+				var s = mcu.isSSet(mcu);
+				var z = mcu.isZSet(mcu);
 				jump = !(s !== ov || z);
 				break;
 			case 7: // BLES
-				var z = exports.isZSet(exports);
-				var ov = exports.isOVSet(exports);
-				var s = exports.isSSet(exports);
+				var z = mcu.isZSet(mcu);
+				var ov = mcu.isOVSet(mcu);
+				var s = mcu.isSSet(mcu);
 				jump = s !== ov || z;
 				break;
 			case 8: // BNE/BNZ
-				var z = exports.isZSet(exports);
+				var z = mcu.isZSet(mcu);
 				jump = !z;
 				break;
 			case 9: // BEQ/BZ
-				var z = exports.isZSet(exports);
+				var z = mcu.isZSet(mcu);
 				jump = z;
 				break;
 			case 0xa: // BNV
-				jump = !exports.isOVSet(exports);
+				jump = !mcu.isOVSet(mcu);
 				break;
 			case 0xb: // BOV
-				jump = exports.isOVSet(exports);
+				jump = mcu.isOVSet(mcu);
 				break;
 			case 0xc: // BPS
-				var s = exports.isSSet(exports);
+				var s = mcu.isSSet(mcu);
 				jump = !s;
 				break;
 			case 0xd: // BNS
-				var s = exports.isSSet(exports);
+				var s = mcu.isSSet(mcu);
 				jump = s;
 				break;
 			case 0xe: // BAL
@@ -2229,172 +2229,172 @@ class mcu {
 				break;
 		}
 		if (jump) {
-			exports.pc += radr;
+			mcu.pc += radr;
 		}
 	}
-	extbw_rn(exports, operand) {
-		let rn = exports.get8BitRegister(exports, operand >> 4 & 0xf);
+	extbw_rn(mcu, operand) {
+		let rn = mcu.get8BitRegister(mcu, operand >> 4 & 0xf);
 		if ((rn & 0x80) !== 0) {
 			rn |= 0xff80;
-			exports.setS(exports, true);
+			mcu.setS(mcu, true);
 		} else {
-			exports.setS(exports, false);
+			mcu.setS(mcu, false);
 		}
 		if (rn === 0) {
-			exports.setZ(exports, true);
+			mcu.setZ(mcu, true);
 		} else {
-			exports.setZ(exports, false);
+			mcu.setZ(mcu, false);
 		}
-		exports.setOperationResult16bit(exports, (operand >> 9 & 7) << 1, rn);
+		mcu.setOperationResult16bit(mcu, (operand >> 9 & 7) << 1, rn);
 	}
-	swi_snum(exports, operand) {
+	swi_snum(mcu, operand) {
 		let snum = operand & 0x3f;
 		let swi_handler = function () {
 			if (snum === 1) {
-				if (typeof exports.parent !== "undefined") {
-					let er0 = exports.get16BitRegister(exports, 0);
-					exports.callScreenChanged(exports, er0);
-					exports.r0 = 0;
-					exports.r1 = 0;
+				if (typeof mcu.parent !== "undefined") {
+					let er0 = mcu.get16BitRegister(mcu, 0);
+					mcu.callScreenChanged(mcu, er0);
+					mcu.r0 = 0;
+					mcu.r1 = 0;
 				}
 			} else {
 				if (snum === 2) {
-					let keycode = exports.keyEventProcessor.getNextKeyCode();
-					if (keycode === 0x29 && exports.is2ndMode) {
+					let keycode = mcu.keyEventProcessor.getNextKeyCode();
+					if (keycode === 0x29 && mcu.is2ndMode) {
 						keycode = 0;
 					}
-					exports.r1 = 0;
-					exports.r0 = keycode & 0xff;
-					exports.isBusy = true;
-					if (exports.r0 === 0xff) {
-						exports.r2 = exports.uartStartAddress & 0xff;
-						exports.r3 = exports.uartStartAddress >> 8 & 0xff;
+					mcu.r1 = 0;
+					mcu.r0 = keycode & 0xff;
+					mcu.isBusy = true;
+					if (mcu.r0 === 0xff) {
+						mcu.r2 = mcu.uartStartAddress & 0xff;
+						mcu.r3 = mcu.uartStartAddress >> 8 & 0xff;
 					}
 				} else {
 					if (snum === 3) {
-						if (typeof exports.automationResolve === "function") {
-							let er0 = exports.get16BitRegister(exports, 0);
-							let er2 = exports.get16BitRegister(exports, 2);
-							if (exports.taRspBuffer === null) {
-								let addr = exports.dataMemory.get8(0, er0) | exports.dataMemory.get8(0, er0 + 0x1) << 8;
-								exports.taRspLength = addr + 0x2;
-								exports.taRspBuffer = new Uint8Array(exports.taRspLength);
+						if (typeof mcu.automationResolve === "function") {
+							let er0 = mcu.get16BitRegister(mcu, 0);
+							let er2 = mcu.get16BitRegister(mcu, 2);
+							if (mcu.taRspBuffer === null) {
+								let addr = mcu.dataMemory.get8(0, er0) | mcu.dataMemory.get8(0, er0 + 0x1) << 8;
+								mcu.taRspLength = addr + 0x2;
+								mcu.taRspBuffer = new Uint8Array(mcu.taRspLength);
 							}
 							for (let i = 0; i < er2; i++) {
-								exports.taRspBuffer[exports.taRspIndex++] = exports.dataMemory.get8(0, er0 + i);
+								mcu.taRspBuffer[mcu.taRspIndex++] = mcu.dataMemory.get8(0, er0 + i);
 							}
-							if (exports.taRspIndex === exports.taRspLength) {
-								exports.automationResolve(exports.taRspBuffer);
-								exports.taRspBuffer = null;
-								exports.taRspLength = 0;
-								exports.taRspIndex = 0;
-								exports.automationResolve = undefined;
-							} else if (exports.taRspIndex > exports.taRspLength) {
-								exports.automationReject("Failed to create response.");
-								exports.taRspBuffer = null;
-								exports.taRspLength = 0;
-								exports.taRspIndex = 0;
+							if (mcu.taRspIndex === mcu.taRspLength) {
+								mcu.automationResolve(mcu.taRspBuffer);
+								mcu.taRspBuffer = null;
+								mcu.taRspLength = 0;
+								mcu.taRspIndex = 0;
+								mcu.automationResolve = undefined;
+							} else if (mcu.taRspIndex > mcu.taRspLength) {
+								mcu.automationReject("Failed to create response.");
+								mcu.taRspBuffer = null;
+								mcu.taRspLength = 0;
+								mcu.taRspIndex = 0;
 							}
-						} else if (typeof exports.uartReady === "function") {
-							if (typeof exports.uartBufLenLocation === "undefined") {
-								exports.uartBufLenLocation = exports.dataMemory.get16(0, 0x106);
-								exports.uartStartAddress = exports.uartBufLenLocation + 0x2;
+						} else if (typeof mcu.uartReady === "function") {
+							if (typeof mcu.uartBufLenLocation === "undefined") {
+								mcu.uartBufLenLocation = mcu.dataMemory.get16(0, 0x106);
+								mcu.uartStartAddress = mcu.uartBufLenLocation + 0x2;
 								console.log("TA framework is ready.");
-								exports.uartReady("TA framework is ready.");
+								mcu.uartReady("TA framework is ready.");
 							} else {
 								console.log("TA initialized already.");
 							}
 						}
 					} else {
 						if (snum === 4) {
-							if (typeof exports.parent !== "undefined") {
-								let er0 = exports.get16BitRegister(exports, 0);
-								exports.callTopIconsChanged(exports, er0);
-								exports.r0 = 0;
-								exports.r1 = 0;
+							if (typeof mcu.parent !== "undefined") {
+								let er0 = mcu.get16BitRegister(mcu, 0);
+								mcu.callTopIconsChanged(mcu, er0);
+								mcu.r0 = 0;
+								mcu.r1 = 0;
 							}
 						} else if (snum === 5) {
-							exports.keyEventProcessor.notifyKeyCanRepeat();
+							mcu.keyEventProcessor.notifyKeyCanRepeat();
 						}
 					}
 				}
 			}
 			let swi_addr = (snum << 0x1) + 0x80;
-			return exports.codeMemory.get16(swi_addr);
+			return mcu.codeMemory.get16(swi_addr);
 		};
-		exports.psw1 = exports.psw;
-		exports.psw |= 0x1;
-		exports.elr1 = exports.pc & 0xffff;
-		exports.ecsr1 = exports.ecsr;
-		exports.psw &= ~exports.NXU16_MASK_MIE_FLAG;
-		exports.pc = swi_handler();
+		mcu.psw1 = mcu.psw;
+		mcu.psw |= 0x1;
+		mcu.elr1 = mcu.pc & 0xffff;
+		mcu.ecsr1 = mcu.ecsr;
+		mcu.psw &= ~mcu.NXU16_MASK_MIE_FLAG;
+		mcu.pc = swi_handler();
 	}
-	brk(exports, operand) {
-		const elevel = exports.psw & exports.NXU16_MASK_ELEVEL;
+	brk(mcu, operand) {
+		const elevel = mcu.psw & mcu.NXU16_MASK_ELEVEL;
 		if (elevel > 1) {
-			exports.resetAll(exports);
-			exports.sp = exports.codeMemory.get16(0);
-			exports.pc = exports.codeMemory.get16(2);
+			mcu.resetAll(mcu);
+			mcu.sp = mcu.codeMemory.get16(0);
+			mcu.pc = mcu.codeMemory.get16(2);
 		}
 		if (elevel < 2) {
-			exports.elr2 = exports.pc & 0xffff;
-			exports.ecsr2 = exports.ecsr;
-			exports.psw2 = exports.psw;
-			exports.psw |= 2;
-			exports.pc = exports.codeMemory.get16(4);
+			mcu.elr2 = mcu.pc & 0xffff;
+			mcu.ecsr2 = mcu.ecsr;
+			mcu.psw2 = mcu.psw;
+			mcu.psw |= 2;
+			mcu.pc = mcu.codeMemory.get16(4);
 		}
 	}
-	b_cadr(exports, operand) {
+	b_cadr(mcu, operand) {
 		let cadr;
 		if ((operand & 0xf00f) === 0xf000) { // B Cadr
-			exports.ecsr = operand >> 8 & 3;
-			cadr = exports.codeMemory.get16(exports.pc);
+			mcu.ecsr = operand >> 8 & 3;
+			cadr = mcu.codeMemory.get16(mcu.pc);
 		} else {
 			if ((operand & 0xf00f) === 0xf001) { // BL Cadr
-				exports.lr = exports.pc + 2 & 0xffff;
-				exports.lcsr = exports.ecsr;
-				exports.ecsr = operand >> 8 & 0xf;
-				cadr = exports.codeMemory.get16(exports.pc);
+				mcu.lr = mcu.pc + 2 & 0xffff;
+				mcu.lcsr = mcu.ecsr;
+				mcu.ecsr = operand >> 8 & 0xf;
+				cadr = mcu.codeMemory.get16(mcu.pc);
 			} else {
 				if ((operand & 0xf00f) === 0xf002) { // B ERn
-					cadr = exports.get16BitRegister(exports, operand >> 4 & 0xf);
+					cadr = mcu.get16BitRegister(mcu, operand >> 4 & 0xf);
 				} else if ((operand & 0xf00f) === 0xf003) { // BL ERn
-					exports.lr = exports.pc + 2 & 0xffff;
-					exports.lcsr = exports.ecsr;
-					cadr = exports.get16BitRegister(exports, operand >> 4 & 0xf);
+					mcu.lr = mcu.pc + 2 & 0xffff;
+					mcu.lcsr = mcu.ecsr;
+					cadr = mcu.get16BitRegister(mcu, operand >> 4 & 0xf);
 				}
 			}
 		}
-		exports.pc = exports.ecsr << 16 | cadr;
+		mcu.pc = mcu.ecsr << 16 | cadr;
 	}
 	checkForInterrupt() {
-		const exports = this;
-		const data_mem = exports.dataMemory;
-		if (exports.pendingEI > 0) {
-			exports.pendingEI--;
+		const mcu = this;
+		const data_mem = mcu.dataMemory;
+		if (mcu.pendingEI > 0) {
+			mcu.pendingEI--;
 		} else {
 			for (let i = 0; i < 1; i++) {
 				if (data_mem.get8(0, data_mem.INTERRUPT_IRQ0 + i) !== 0) {
-					exports.elr2 = exports.pc & 0xffff;
-					exports.ecsr2 = exports.ecsr;
-					exports.psw2 = exports.psw;
-					exports.psw = 2;
-					exports.ecsr = 0;
-					exports.pc = exports.getInterruptHandlerAddress(exports, i, false);
+					mcu.elr2 = mcu.pc & 0xffff;
+					mcu.ecsr2 = mcu.ecsr;
+					mcu.psw2 = mcu.psw;
+					mcu.psw = 2;
+					mcu.ecsr = 0;
+					mcu.pc = mcu.getInterruptHandlerAddress(mcu, i, false);
 					break;
 				}
 			}
-			if (exports.isMIESet(exports)) {
+			if (mcu.isMIESet(mcu)) {
 				for (let j = 1; j < 8; j++) {
 					if (data_mem.get8(0, data_mem.INTERRUPT_IE0 + j) !== 0 && data_mem.get8(0, data_mem.INTERRUPT_IRQ0 + j) !== 0) {
-						if ((exports.psw & exports.NXU16_MASK_ELEVEL) < 2) {
-							exports.elr1 = exports.pc & 0xffff;
-							exports.ecsr1 = exports.ecsr;
-							exports.psw1 = exports.psw;
-							exports.psw = 1;
-							exports.setMIE(exports, false);
-							exports.ecsr = 0;
-							exports.pc = exports.getInterruptHandlerAddress(exports, j, true);
+						if ((mcu.psw & mcu.NXU16_MASK_ELEVEL) < 2) {
+							mcu.elr1 = mcu.pc & 0xffff;
+							mcu.ecsr1 = mcu.ecsr;
+							mcu.psw1 = mcu.psw;
+							mcu.psw = 1;
+							mcu.setMIE(mcu, false);
+							mcu.ecsr = 0;
+							mcu.pc = mcu.getInterruptHandlerAddress(mcu, j, true);
 							break;
 						}
 					}
@@ -2403,21 +2403,21 @@ class mcu {
 		}
 	}
 	run() {
-		let exports = this;
+		let mcu = this;
 		let pc;
 		let operand;
 		const loop_count = this.isBusy ? 0x1388 : 0x32;
 		for (let i = 0; i < loop_count; i++) {
 			pc = this.pc;
 			operand = this.codeMemory.get16(pc);
-			if (operand === 0xe502 && exports.keyEventProcessor.isQueueEmpty()) { // E502 = SWI 2
+			if (operand === 0xe502 && mcu.keyEventProcessor.isQueueEmpty()) { // E502 = SWI 2
 				this.isBusy = false;
 				break;
 			}
 			if (constants.Constants.SHOW_C_TRACE && typeof dolphinMapData[pc] !== "undefined") {
 				console.log("pc= 0x" + pc.toString(16) + " - " + dolphinMapData[pc]);
 				if (dolphinMapData[pc].includes("memClearedDialog")) {
-					exports.showConsole = true;
+					mcu.showConsole = true;
 					debugger;
 				}
 			}
@@ -2431,12 +2431,12 @@ class mcu {
 				debugger;
 			}
 		}
-		let _0x362ddc = exports.dataMemory.get8(0, exports.dataMemory.INTERRUPT_IRQ7);
+		let _0x362ddc = mcu.dataMemory.get8(0, mcu.dataMemory.INTERRUPT_IRQ7);
 		if ((_0x362ddc & 0x1) !== 0) {
 			_0x362ddc = _0x362ddc ^ 0x1;
-			exports.dataMemory.set8(0, _0x362ddc, exports.dataMemory.INTERRUPT_IRQ7);
-			if (exports.keyEventProcessor.isQueueEmpty() && !exports.keyEventProcessor.isPotentialAutoRepeat()) {
-				exports.setLastKeyPressed(0);
+			mcu.dataMemory.set8(0, _0x362ddc, mcu.dataMemory.INTERRUPT_IRQ7);
+			if (mcu.keyEventProcessor.isQueueEmpty() && !mcu.keyEventProcessor.isPotentialAutoRepeat()) {
+				mcu.setLastKeyPressed(0);
 			}
 		}
 		this.checkForInterrupt();

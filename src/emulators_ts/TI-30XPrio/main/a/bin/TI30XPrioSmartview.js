@@ -34,7 +34,7 @@ class TI30XPrioSmartview extends smartview.AbstractSmartviewEmulator {
 			"ROMLocation": "bin/ti30mv.h84state",
 			"FaceplateLocation": "images/TI30XPRIO_touch.svg",
 			"KeyMappingFile": '',
-			"KeyHistBufferLength": 0xa,
+			"KeyHistBufferLength": 10,
 			"DisplayMode": "MATHPRINT",
 			"AngleMode": "DEG"
 		};

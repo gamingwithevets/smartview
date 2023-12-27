@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 class lcd {
 	constructor(calcModel, calcDivId, width, height) {
 		this.created = false;
-		this.SCREEN_SIZE = 0x600;
-		this.INDICARTORS_STATUS_LENGTH = 0x3;
+		this.SCREEN_SIZE = 1536;
+		this.INDICARTORS_STATUS_LENGTH = 3;
 		this.calcModel = calcModel;
 		this.calcDivId = calcDivId;
 		this.width = width;
@@ -15,76 +15,76 @@ class lcd {
 		this.lastScreenData = new Uint8Array(this.SCREEN_SIZE);
 		this.topIconsStatus = 0;
 	}
-	saveScreenData(_0x4463bc) {
-		this.lastScreenData = _0x4463bc;
+	saveScreenData(screen_data) {
+		this.lastScreenData = screen_data;
 	}
-	saveTopIconsData(_0x289218) {
-		this.topIconsStatus = _0x289218;
+	saveTopIconsData(status_bar) {
+		this.topIconsStatus = status_bar;
 	}
 	getScreen() {
 		return document.getElementById("display").toDataURL();
 	}
 	start() {
-		return new Promise((_0x5668fd, _0x1afd3f) => {
+		return new Promise((resolve, reject) => {
 			this.create();
 			if (this.created) {
 				this.screenChanged(this.lastScreenData);
 				this.topIconsChanged(this.topIconsStatus);
 			}
-			_0x5668fd();
+			resolve();
 		});
 	}
 	stop() {
-		return new Promise((_0x1b0ea1, _0x574971) => {
-			_0x1b0ea1();
+		return new Promise((resolve, reject) => {
+			resolve();
 		});
 	}
 	reset() {
-		return new Promise((_0x28fbee, _0x4dcddf) => {
-			_0x28fbee();
+		return new Promise((resolve, reject) => {
+			resolve();
 		});
 	}
 	getState() {
-		let _0x58f209 = this.SCREEN_SIZE;
-		const _0x2994e5 = _0x58f209 + this.INDICARTORS_STATUS_LENGTH;
-		const _0x39b91d = new Uint8Array(_0x2994e5);
+		let scr_size = this.SCREEN_SIZE;
+		const size = scr_size + this.INDICARTORS_STATUS_LENGTH;
+		const arr = new Uint8Array(size);
 		if (typeof this.lastScreenData === "undefined") {
 			this.lastScreenData = new Uint8Array(this.SCREEN_SIZE);
 		}
-		_0x39b91d.set(this.lastScreenData);
-		_0x39b91d[_0x58f209++] = this.topIconsStatus & 0xff;
-		_0x39b91d[_0x58f209++] = this.topIconsStatus >> 8 & 0xff;
-		_0x39b91d[_0x58f209] = this.topIconsStatus >> 16 & 0xff;
-		return _0x39b91d;
+		arr.set(this.lastScreenData);
+		arr[scr_size++] = this.topIconsStatus & 0xff;
+		arr[scr_size++] = this.topIconsStatus >> 8 & 0xff;
+		arr[scr_size] = this.topIconsStatus >> 16 & 0xff;
+		return arr;
 	}
-	setState(_0x1b71c5) {
-		if (typeof _0x1b71c5 !== "undefined") {
-			this.lastScreenData = _0x1b71c5.subarray(0, _0x1b71c5.length - this.INDICARTORS_STATUS_LENGTH);
+	setState(state) {
+		if (typeof state !== "undefined") {
+			this.lastScreenData = state.subarray(0, state.length - this.INDICARTORS_STATUS_LENGTH);
 		}
 	}
 	create() {
 		if (!this.created) {
-			const _0x3625fb = document.createElement("div");
-			const _0x354f6a = document.createElement("canvas");
-			const _0x3a2976 = document.getElementById(this.calcModel);
-			const _0x5a61b2 = document.getElementById(this.calcDivId);
-			const _0x2a79d1 = document.querySelectorAll("*[id^=\"" + this.calcModel + "_CALCSCREEN\");
-			if (_0x3a2976 !== null && _0x2a79d1.length > 0 && _0x5a61b2 !== null) {
-				while (_0x5a61b2.firstChild) {
-					_0x5a61b2.removeChild(_0x5a61b2.firstChild);
+			const div = document.createElement("div");
+			const canvas = document.createElement("canvas");
+			const calc_model = document.getElementById(this.calcModel);
+			const calc_div_id = document.getElementById(this.calcDivId);
+			const screen = document.querySelectorAll("*[id^=\"" + this.calcModel + "_CALCSCREEN\");
+			if (calc_model !== null && screen.length > 0 && calc_div_id !== null) {
+				while (calc_div_id.firstChild) {
+					calc_div_id.removeChild(calc_div_id.firstChild);
 				}
-				_0x5a61b2.insertBefore(_0x3a2976, _0x5a61b2.firstChild);
-				_0x5a61b2.className = "calculatorDiv";
-				_0x5a61b2.tabIndex = 0;
-				_0x3625fb.id = "displayDiv";
-				_0x3625fb.className = "displayDiv";
-				_0x5a61b2.appendChild(_0x3625fb);
-				_0x354f6a.id = "display";
-				_0x354f6a.className = "display";
-				_0x354f6a.width = this.width;
-				_0x354f6a.height = this.height;
-				_0x3625fb.appendChild(_0x354f6a);
-				this.canvasContext = _0x354f6a.getContext("2d");
+				calc_div_id.insertBefore(calc_model, calc_div_id.firstChild);
+				calc_div_id.className = "calculatorDiv";
+				calc_div_id.tabIndex = 0;
+				div.id = "displayDiv";
+				div.className = "displayDiv";
+				calc_div_id.appendChild(div);
+				canvas.id = "display";
+				canvas.className = "display";
+				canvas.width = this.width;
+				canvas.height = this.height;
+				div.appendChild(canvas);
+				this.canvasContext = canvas.getContext("2d");
 				this.align();
 				this.created = true;
 			}
@@ -92,24 +92,24 @@ class lcd {
 	}
 	align() {
 		if (this.created) {
-			const _0x29dd69 = document.getElementById(this.calcModel);
-			const _0x52f189 = document.getElementById("displayDiv");
-			const _0x5dae71 = document.querySelectorAll("*[id^=\"" + this.calcModel + "_CALCSCREEN\ rect");
-			if (_0x29dd69 !== null && _0x5dae71.length > 0) {
-				const _0x25df8e = _0x5dae71[0];
-				const _0x4a8906 = _0x29dd69.getAttribute("viewBox").split(/\s*,\s*|\s+/);
-				const _0x55bee5 = parseFloat(_0x4a8906[0]);
-				const _0x34f4c6 = parseFloat(_0x4a8906[0x1]);
-				const _0x44dbba = parseFloat(_0x4a8906[0x2]);
-				const _0x423294 = parseFloat(_0x4a8906[0x3]);
-				const _0x3ae209 = _0x25df8e.x.baseVal.value + 0x2;
-				const _0x4356d0 = _0x25df8e.y.baseVal.value + 0x2;
-				const _0x1358c8 = _0x25df8e.width.baseVal.value - 0x4;
-				const _0x29934c = _0x25df8e.height.baseVal.value - 0x4;
-				_0x52f189.style.left = (_0x3ae209 - _0x55bee5) / _0x44dbba * 0x64 + "%";
-				_0x52f189.style.top = (_0x4356d0 - _0x34f4c6) / _0x423294 * 0x64 + "%";
-				_0x52f189.style.width = _0x1358c8 / _0x44dbba * 0x64 + "%";
-				_0x52f189.style.height = _0x29934c / _0x423294 * 0x64 + "%";
+			const calc_model = document.getElementById(this.calcModel);
+			const display_div = document.getElementById("displayDiv");
+			const screen = document.querySelectorAll("*[id^=\"" + this.calcModel + "_CALCSCREEN\ rect");
+			if (calc_model !== null && screen.length > 0) {
+				const screen_0 = screen[0];
+				const viewbox = calc_model.getAttribute("viewBox").split(/\s*,\s*|\s+/);
+				const viewbox0 = parseFloat(viewbox[0]);
+				const viewbox1 = parseFloat(viewbox[1]);
+				const viewbox2 = parseFloat(viewbox[2]);
+				const viewbox3 = parseFloat(viewbox[3]);
+				const baseval_x = screen_0.x.baseVal.value + 2;
+				const baseval_y = screen_0.y.baseVal.value + 2;
+				const baseval_w = screen_0.width.baseVal.value - 4;
+				const baseval_h = screen_0.height.baseVal.value - 4;
+				display_div.style.left = (baseval_x - viewbox0) / viewbox2 * 100 + "%";
+				display_div.style.top = (baseval_y - viewbox1) / viewbox3 * 100 + "%";
+				display_div.style.width = baseval_w / viewbox2 * 100 + "%";
+				display_div.style.height = baseval_h / viewbox3 * 100 + "%";
 			}
 		}
 	}

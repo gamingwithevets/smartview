@@ -3,168 +3,170 @@
 Object.defineProperty(exports, "__esModule", {
 	"value": true
 });
-const _0x5387f7 = require("./GenericLCD");
-const _0x54faa2 = new Uint8Array([0x7f, 0x41, 0x5f, 0x5f, 0x7f, 0x7b, 0x41, 0x7f]);
-const _0x5eeb02 = new Uint8Array([0x3a, 0x2a, 0x2e, 0, 0x3e, 0x4, 0x8, 0x3e, 0, 0x3e, 0x22, 0x22, 0x1c]);
-const _0x53cc00 = new Uint8Array([0x3e, 0xa, 0xa, 0, 0x3e, 0, 0x36, 0x8, 0x36]);
-const _0x563cbd = new Uint8Array([0x3e, 0x8, 0x8, 0x3e]);
-const _0x2e4a32 = new Uint8Array([0x3e, 0x2a, 0x2a, 0x14]);
-const _0x3bb52e = new Uint8Array([0x1c, 0x22, 0x22, 0x1c]);
-const _0x2caebb = new Uint8Array([0x7f, 0x41, 0x5f, 0x5f, 0x7f, 0x45, 0x55, 0x51, 0x7f]);
-const _0x1ba854 = new Uint8Array([0x2e, 0x2a, 0x3a, 0, 0x3e, 0x22, 0x22, 0, 0x3e]);
-const _0x4f233c = new Uint8Array([0x3e, 0x2a, 0x2a, 0, 0x3e, 0x4, 0x8, 0x3e, 0, 0x1c, 0x22, 0x2a, 0x3a]);
-const _0x185907 = new Uint8Array([0x3e, 0x22, 0x22, 0x1c, 0, 0x3e, 0x2a, 0x2a]);
-const _0xbffcf1 = new Uint8Array([0x1c, 0x22, 0x2a, 0x3a]);
-const _0x3b9243 = new Uint8Array([0x3e, 0xa, 0x1a, 0x2e, 0, 0x3c, 0xa, 0xa, 0x3c, 0, 0x3e, 0x22, 0x22, 0x1c]);
-const _0x128015 = new Uint8Array([0x7f, 0x41, 0x5f, 0x5f, 0x7f, 0x55, 0x55, 0x41, 0x7f]);
-const _0x2fdb58 = new Uint8Array([0x1c, 0x36, 0x22, 0x22, 0x22, 0x2a, 0x2a, 0x22, 0x3e]);
-const _0x15b7f9 = new Uint8Array([0x63, 0x55, 0x69, 0x55, 0x63]);
-const _0x539ae9 = new Uint8Array([0x8, 0x1c, 0x3e]);
-const _0x4a858f = new Uint8Array([0x8, 0xc, 0xe, 0xc, 0x8]);
-const _0x305991 = new Uint8Array([0x8, 0x18, 0x38, 0x18, 0x8]);
-const _0x3aba9a = new Uint8Array([0x3e, 0x1c, 0x8]);
-class GenericLCDColumnMajor extends _0x5387f7.GenericLCD {
-	constructor(_0x5db699, _0x4d79b2) {
-		super(_0x5db699, _0x4d79b2, 384, 144);
+
+const generic_lcd = require("./GenericLCD");
+const x_l1 = new Uint8Array([0x7f, 0x41, 0x5f, 0x5f, 0x7f, 0x7b, 0x41, 0x7f]);
+const x_2nd = new Uint8Array([0x3a, 0x2a, 0x2e, 0, 0x3e, 0x4, 0x8, 0x3e, 0, 0x3e, 0x22, 0x22, 0x1c]);
+const x_fix = new Uint8Array([0x3e, 0xa, 0xa, 0, 0x3e, 0, 0x36, 0x8, 0x36]);
+const x_h = new Uint8Array([0x3e, 0x8, 0x8, 0x3e]);
+const x_b = new Uint8Array([0x3e, 0x2a, 0x2a, 0x14]);
+const x_o = new Uint8Array([0x1c, 0x22, 0x22, 0x1c]);
+const x_l2 = new Uint8Array([0x7f, 0x41, 0x5f, 0x5f, 0x7f, 0x45, 0x55, 0x51, 0x7f]);
+const x_sci = new Uint8Array([0x2e, 0x2a, 0x3a, 0, 0x3e, 0x22, 0x22, 0, 0x3e]);
+const x_eng = new Uint8Array([0x3e, 0x2a, 0x2a, 0, 0x3e, 0x4, 0x8, 0x3e, 0, 0x1c, 0x22, 0x2a, 0x3a]);
+const x_de = new Uint8Array([0x3e, 0x22, 0x22, 0x1c, 0, 0x3e, 0x2a, 0x2a]);
+const x_g = new Uint8Array([0x1c, 0x22, 0x2a, 0x3a]);
+const x_rad = new Uint8Array([0x3e, 0xa, 0x1a, 0x2e, 0, 0x3c, 0xa, 0xa, 0x3c, 0, 0x3e, 0x22, 0x22, 0x1c]);
+const x_l3 = new Uint8Array([0x7f, 0x41, 0x5f, 0x5f, 0x7f, 0x55, 0x55, 0x41, 0x7f]);
+const x_battery = new Uint8Array([0x1c, 0x36, 0x22, 0x22, 0x22, 0x2a, 0x2a, 0x22, 0x3e]);
+const x_busy = new Uint8Array([0x63, 0x55, 0x69, 0x55, 0x63]);
+const x_left_arrow = new Uint8Array([0x8, 0x1c, 0x3e]);
+const x_up_arrow = new Uint8Array([0x8, 0xc, 0xe, 0xc, 0x8]);
+const x_down_arrow = new Uint8Array([0x8, 0x18, 0x38, 0x18, 0x8]);
+const x_right_arrow = new Uint8Array([0x3e, 0x1c, 0x8]);
+
+class GenericLCDColumnMajor extends generic_lcd.GenericLCD {
+	constructor(calcModel, calcDivId) {
+		super(calcModel, calcDivId, 384, 144);
 		this.cachedIconsStatus = 0;
 		this.x_l1 = 0;
-		this.x_2nd = this.x_l1 + (_0x54faa2.length + 0x3) * 0x2;
-		this.x_fix = this.x_2nd + (_0x5eeb02.length + 0x4) * 0x2;
-		this.x_h = this.x_fix + (_0x53cc00.length + 0x4) * 0x2;
-		this.x_b = this.x_h + (_0x563cbd.length + 0x1) * 0x2;
-		this.x_o = this.x_b + (_0x2e4a32.length + 0x1) * 0x2;
-		this.x_l2 = this.x_o + (_0x3bb52e.length + 0x8) * 0x2;
-		this.x_sci = this.x_l2 + (_0x2caebb.length + 0x2) * 0x2;
-		this.x_eng = this.x_sci + (_0x1ba854.length + 0x1) * 0x2;
-		this.x_de = this.x_eng + (_0x4f233c.length + 0x3) * 0x2;
-		this.x_g = this.x_de + (_0x185907.length + 0x1) * 0x2;
-		this.x_rad = this.x_g + (_0xbffcf1.length + 0x1) * 0x2;
-		this.x_l3 = this.x_rad + (_0x3b9243.length + 0x2) * 0x2;
-		this.x_battery = this.x_l3 + (_0x128015.length + 0x8) * 0x2;
-		this.x_busy = this.x_battery + (_0x2fdb58.length + 0x5) * 0x2;
-		this.x_left_arrow = this.x_busy + (_0x15b7f9.length + 0x4) * 0x2;
-		this.x_up_arrow = this.x_left_arrow + (_0x539ae9.length + 0x2) * 0x2;
-		this.x_down_arrow = this.x_up_arrow + (_0x4a858f.length + 0x2) * 0x2;
-		this.x_right_arrow = this.x_down_arrow + (_0x305991.length + 0x2) * 0x2;
+		this.x_2nd = this.x_l1 + (x_l1.length + 3) * 2;
+		this.x_fix = this.x_2nd + (x_2nd.length + 4) * 2;
+		this.x_h = this.x_fix + (x_fix.length + 4) * 2;
+		this.x_b = this.x_h + (x_h.length + 1) * 2;
+		this.x_o = this.x_b + (x_b.length + 1) * 2;
+		this.x_l2 = this.x_o + (x_o.length + 8) * 2;
+		this.x_sci = this.x_l2 + (x_l2.length + 2) * 2;
+		this.x_eng = this.x_sci + (x_sci.length + 1) * 2;
+		this.x_de = this.x_eng + (x_eng.length + 3) * 2;
+		this.x_g = this.x_de + (x_de.length + 1) * 2;
+		this.x_rad = this.x_g + (x_g.length + 1) * 2;
+		this.x_l3 = this.x_rad + (x_rad.length + 2) * 2;
+		this.x_battery = this.x_l3 + (x_l3.length + 8) * 2;
+		this.x_busy = this.x_battery + (x_battery.length + 5) * 2;
+		this.x_left_arrow = this.x_busy + (x_busy.length + 4) * 2;
+		this.x_up_arrow = this.x_left_arrow + (x_left_arrow.length + 2) * 2;
+		this.x_down_arrow = this.x_up_arrow + (x_up_arrow.length + 2) * 2;
+		this.x_right_arrow = this.x_down_arrow + (x_down_arrow.length + 2) * 2;
 	}
-	["screenChanged"](_0x23d8c6) {
-		super.saveScreenData(_0x23d8c6);
+	screenChanged(data) {
+		super.saveScreenData(data);
 		this.canvasContext.fillStyle = "white";
 		this.canvasContext.fillRect(0, 16, this.width, this.height);
 		this.canvasContext.fillStyle = "#000000";
-		let _0x35e9fb = 0;
-		let _0x50d823 = 16;
-		for (let _0x4889e9 = 0; _0x4889e9 < 1536; _0x4889e9++) {
-			const _0x48dea9 = _0x23d8c6[_0x4889e9];
-			for (let _0x169008 = 0; _0x169008 < 0x8; _0x169008++) {
-				const _0x3960d3 = _0x48dea9 >> _0x169008 & 0x1;
-				if (_0x3960d3 === 0x1) {
-					this.canvasContext.fillRect(_0x35e9fb, _0x50d823, 0x2, 0x2);
+		let x = 0;
+		let y = 16;
+		for (let j = 0; j < 1536; j++) {
+			const dat = data[j];
+			for (let i = 0; i < 8; i++) {
+				const on = dat >> i & 1;
+				if (on === 1) {
+					this.canvasContext.fillRect(x, y, 2, 2);
 				}
-				_0x50d823 += 0x2;
-				if (_0x50d823 >= this.height) {
-					_0x50d823 = 16;
-					_0x35e9fb += 0x2;
+				y += 2;
+				if (y >= this.height) {
+					y = 16;
+					x += 2;
 				}
 			}
 		}
 	}
-	["topIconsChanged"](_0x2c972f) {
-		super.saveTopIconsData(_0x2c972f);
-		const _0x5e9ff7 = _0x2c972f ^ this.cachedIconsStatus;
-		if (_0x5e9ff7 !== 0) {
-			for (let _0x3bf9df = 0; _0x3bf9df < 0x13; _0x3bf9df++) {
-				if ((_0x5e9ff7 >> _0x3bf9df & 0x1) === 0x1) {
-					this.updateIcon(_0x3bf9df, !!((_0x2c972f >> _0x3bf9df & 0x1) === 0x1));
+	topIconsChanged(data) {
+		super.saveTopIconsData(data);
+		const changed = data ^ this.cachedIconsStatus;
+		if (changed !== 0) {
+			for (let i = 0; i < 19; i++) {
+				if ((changed >> i & 1) === 1) {
+					this.updateIcon(i, !!((data >> i & 1) === 1));
 				}
 			}
-			this.cachedIconsStatus = _0x2c972f;
+			this.cachedIconsStatus = data;
 		}
 	}
-	["updateIcon"](_0x2f40e4, _0xaa3e63) {
-		switch (_0x2f40e4) {
+	updateIcon(idx, visible) {
+		switch (idx) {
 			case 0:
-				this.drawIcon(this.x_l1, 0, _0x54faa2, _0xaa3e63);
+				this.drawIcon(this.x_l1, 0, x_l1, visible);
 				break;
-			case 0x1:
-				this.drawIcon(this.x_2nd, 0, _0x5eeb02, _0xaa3e63);
+			case 1:
+				this.drawIcon(this.x_2nd, 0, x_2nd, visible);
 				break;
-			case 0x2:
-				this.drawIcon(this.x_fix, 0, _0x53cc00, _0xaa3e63);
+			case 2:
+				this.drawIcon(this.x_fix, 0, x_fix, visible);
 				break;
-			case 0x3:
-				this.drawIcon(this.x_h, 0, _0x563cbd, _0xaa3e63);
+			case 3:
+				this.drawIcon(this.x_h, 0, x_h, visible);
 				break;
-			case 0x4:
-				this.drawIcon(this.x_b, 0, _0x2e4a32, _0xaa3e63);
+			case 4:
+				this.drawIcon(this.x_b, 0, x_b, visible);
 				break;
-			case 0x5:
-				this.drawIcon(this.x_o, 0, _0x3bb52e, _0xaa3e63);
+			case 5:
+				this.drawIcon(this.x_o, 0, x_o, visible);
 				break;
-			case 0x6:
-				this.drawIcon(this.x_l2, 0, _0x2caebb, _0xaa3e63);
+			case 6:
+				this.drawIcon(this.x_l2, 0, x_l2, visible);
 				break;
-			case 0x7:
-				this.drawIcon(this.x_sci, 0, _0x1ba854, _0xaa3e63);
+			case 7:
+				this.drawIcon(this.x_sci, 0, x_sci, visible);
 				break;
-			case 0x8:
-				this.drawIcon(this.x_eng, 0, _0x4f233c, _0xaa3e63);
+			case 8:
+				this.drawIcon(this.x_eng, 0, x_eng, visible);
 				break;
-			case 0x9:
-				this.drawIcon(this.x_de, 0, _0x185907, _0xaa3e63);
+			case 9:
+				this.drawIcon(this.x_de, 0, x_de, visible);
 				break;
-			case 0xa:
-				this.drawIcon(this.x_g, 0, _0xbffcf1, _0xaa3e63);
+			case 10:
+				this.drawIcon(this.x_g, 0, x_g, visible);
 				break;
-			case 0xb:
-				this.drawIcon(this.x_rad, 0, _0x3b9243, _0xaa3e63);
+			case 11:
+				this.drawIcon(this.x_rad, 0, x_rad, visible);
 				break;
-			case 0xc:
-				this.drawIcon(this.x_l3, 0, _0x128015, _0xaa3e63);
+			case 12:
+				this.drawIcon(this.x_l3, 0, x_l3, visible);
 				break;
-			case 0xd:
-				this.drawIcon(this.x_battery, 0, _0x2fdb58, _0xaa3e63);
+			case 13:
+				this.drawIcon(this.x_battery, 0, x_battery, visible);
 				break;
-			case 0xe:
-				this.drawIcon(this.x_busy, 0, _0x15b7f9, _0xaa3e63);
+			case 14:
+				this.drawIcon(this.x_busy, 0, x_busy, visible);
 				break;
-			case 0xf:
-				this.drawIcon(this.x_left_arrow, 0, _0x539ae9, _0xaa3e63);
+			case 15:
+				this.drawIcon(this.x_left_arrow, 0, x_left_arrow, visible);
 				break;
-			case 0x10:
-				this.drawIcon(this.x_up_arrow, 0, _0x4a858f, _0xaa3e63);
+			case 16:
+				this.drawIcon(this.x_up_arrow, 0, x_up_arrow, visible);
 				break;
-			case 0x11:
-				this.drawIcon(this.x_down_arrow, 0, _0x305991, _0xaa3e63);
+			case 17:
+				this.drawIcon(this.x_down_arrow, 0, x_down_arrow, visible);
 				break;
-			case 0x12:
-				this.drawIcon(this.x_right_arrow, 0, _0x3aba9a, _0xaa3e63);
+			case 18:
+				this.drawIcon(this.x_right_arrow, 0, x_right_arrow, visible);
 				break;
 			default:
-				console.log("ERROR icon index does Not exists! idx=" + _0x2f40e4);
+				console.log("ERROR idx index does Not exists! idx=" + idx);
 				break;
 		}
 	}
-	["drawIcon"](_0x5b6f97, _0x5a7537, _0x4bbdfe, _0x1a4f43) {
-		if (_0x1a4f43) {
+	drawIcon(idx, y, data, visible) {
+		if (visible) {
 			this.canvasContext.fillStyle = "#000000";
-			for (let _0x49a2a7 = 0; _0x49a2a7 < _0x4bbdfe.length; _0x49a2a7++) {
-				const _0x54fc4b = _0x4bbdfe[_0x49a2a7];
-				if (_0x54fc4b !== 0) {
-					_0x5a7537 = _0x5a7537;
-					for (let _0x258d3d = 0; _0x258d3d < 0x8; _0x258d3d++) {
-						const _0x2bf026 = _0x54fc4b >> _0x258d3d & 0x1;
+			for (let j = 0; j < data.length; j++) {
+				const dat = data[j];
+				if (dat !== 0) {
+					y = y;
+					for (let i = 0; i < 8; i++) {
+						const _0x2bf026 = dat >> i & 1;
 						if (_0x2bf026 !== 0) {
-							this.canvasContext.fillRect(_0x5b6f97, _0x5a7537, 0x2, 0x2);
+							this.canvasContext.fillRect(idx, y, 2, 2);
 						}
-						_0x5a7537 += 0x2;
+						y += 2;
 					}
 				}
-				_0x5b6f97 += 0x2;
+				idx += 2;
 			}
 		} else {
 			this.canvasContext.fillStyle = "white";
-			this.canvasContext.fillRect(_0x5b6f97, _0x5a7537, _0x4bbdfe.length * 0x2, 16);
+			this.canvasContext.fillRect(idx, y, data.length * 2, 16);
 		}
 	}
 }

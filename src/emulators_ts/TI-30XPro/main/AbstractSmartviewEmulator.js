@@ -31,13 +31,13 @@ var _0xea1af0 = this && this.__awaiter || function (_0x3a408c, _0x17450f, _0x27e
 Object.defineProperty(exports, "__esModule", {
 	"value": true
 });
-const asic = require("../../../../src/emulators_ts/ASIC");
-const AbstractBaseEmulator = require("../../../../src/emulators_ts/AbstractBaseEmulator");
-const Statefiles = require("../../../../src/emulators_ts/Statefiles");
-class AbstractSmartviewEmulator extends AbstractBaseEmulator.AbstractBaseEmulator {
+const _0x197ded = require("../../../../src/emulators_ts/ASIC");
+const _0x20471f = require("../../../../src/emulators_ts/AbstractBaseEmulator");
+const _0x2b198c = require("../../../../src/emulators_ts/Statefiles");
+class AbstractSmartviewEmulator extends _0x20471f.AbstractBaseEmulator {
 	constructor(_0x967fb4) {
 		super(null, null, null, null, _0x967fb4);
-		this.currentMetadata = new Statefiles.StatefileInfo();
+		this.currentMetadata = new _0x2b198c.StatefileInfo();
 		this.stateString = null;
 	}
 	set ["defaultState"](_0x336e9c) {
@@ -53,7 +53,7 @@ class AbstractSmartviewEmulator extends AbstractBaseEmulator.AbstractBaseEmulato
 		}
 	}
 	["getScreenCapture"]() {
-		return AbstractBaseEmulator.AbstractBaseEmulator.prototype.getScreen();
+		return _0x20471f.AbstractBaseEmulator.prototype.getScreen();
 	}
 	["relSVGKey"]() {
 		return this.keypad.keyUpEvent();
@@ -68,7 +68,7 @@ class AbstractSmartviewEmulator extends AbstractBaseEmulator.AbstractBaseEmulato
 		return _0xd61923;
 	}
 	["getStateData"](_0x38c5f0) {
-		const _0x5b4762 = new Statefiles.StatefileManager();
+		const _0x5b4762 = new _0x2b198c.StatefileManager();
 		_0x5b4762.getState([this.asic, this.lcd], {
 			"osversion": this.currentMetadata.osversion,
 			"statefiletype": this.currentMetadata.statefiletype,
@@ -151,7 +151,7 @@ class AbstractSmartviewEmulator extends AbstractBaseEmulator.AbstractBaseEmulato
 	}
 	["initializeFromStatefile"](_0x43f3d6) {
 		return new Promise((_0x1e7866, _0x20bac0) => {
-			const _0x44f9a3 = new Statefiles.StatefileManager();
+			const _0x44f9a3 = new _0x2b198c.StatefileManager();
 			console.log("initializeFromStatefile calling setStateFomStatefile");
 			_0x44f9a3.setStateFromStatefile([this.asic, this.lcd], _0x43f3d6).then(() => {
 				this.currentMetadata = _0x43f3d6.info;
@@ -195,7 +195,7 @@ class AbstractSmartviewEmulator extends AbstractBaseEmulator.AbstractBaseEmulato
 	}
 	["isInitializing"]() {
 		this.asic.getASICState().then(function (_0x4b76e1) {
-			return _0x4b76e1 === asic.ASICState.IDLE;
+			return _0x4b76e1 === _0x197ded.ASICState.IDLE;
 		})["catch"](function () {
 			return true;
 		});
@@ -227,7 +227,7 @@ class AbstractSmartviewEmulator extends AbstractBaseEmulator.AbstractBaseEmulato
 	["verifyChecksumAndGetMetaInfo"](_0x1617bf) {
 		let _0x56e43c = _0x1617bf.info;
 		if (typeof _0x56e43c !== "undefined") {
-			const _0x263433 = new Statefiles.StatefileManager();
+			const _0x263433 = new _0x2b198c.StatefileManager();
 			const _0x321191 = _0x263433.getMd5String(_0x1617bf);
 			if (_0x321191 !== _0x56e43c.checksum) {
 				console.log("incorrect checksum found in statefile!" + _0x56e43c.checksum);

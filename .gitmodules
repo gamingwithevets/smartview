@@ -1,0 +1,3 @@
+[submodule "src/emulators_ts/ts-md5"]
+	path = src/emulators_ts/ts-md5
+	url = https://github.com/cotag/ts-md5.git

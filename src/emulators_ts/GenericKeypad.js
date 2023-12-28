@@ -8,7 +8,7 @@ const asic = require("./ASIC");
 const utilities = require("./Utilities");
 
 class GenericKeypad {
-	constructor(divId, settings, asic) {
+	constructor(divId, settings, asic_instance) {
 		this.hasAKeyBeenPressed = false;
 		this.keyHistoryPointer = 0;
 		this.keyHistBufferMaxLength = 0;
@@ -39,7 +39,7 @@ class GenericKeypad {
 		this.DOMKeys = [];
 		this.divId = divId;
 		this.settings = settings;
-		this.asic = asic;
+		this.asic = asic_instance;
 	}
 	start() {
 		const _0x2a346b = document.getElementById(this.divId);

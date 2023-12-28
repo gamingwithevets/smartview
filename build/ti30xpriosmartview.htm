@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>TI-30X Prio Emulator</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href="css/ti30xpriosmartview-min.css" media="screen" rel="Stylesheet" type="text/css" />
+    <style type="text/css">
+        body {
+            margin: 0px;
+            outline: none;
+            background: #7E8080;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="calculatorDiv" class="calculatorDiv" tabindex="0" />
+    <script type="text/javascript" src="js/ti30xpriosmartview-min.js"></script>
+    <script type="text/javascript">
+        var calc_instance;
+        window.addEventListener("DOMContentLoaded", function() {
+            calc_instance = new TIExamCalc.TI30XPrioSmartview();
+			calc_instance.launchEmulator();
+        });
+        window.addEventListener("resize", function () {
+            //calc_instance.zoom();
+        });
+    </script>
+</body>
+
+</html>

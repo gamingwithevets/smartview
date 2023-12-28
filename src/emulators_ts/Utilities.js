@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
 	"value": true
 });
 
-buffer = require("buffer");
+var buffer = require("buffer");
 
 class Utilities {
 	static hasClass(_0x2df6f8, _0x199146) {

@@ -71,7 +71,7 @@ class AbstractBaseEmulator {
 				const manager = new statefiles.StatefileManager();
 				manager.setState([this.asic, this.lcd], this.statefile).then(() => {
 					resolve();
-				})catch(e => {
+				}).catch(e => {
 					console.log("Could not load emulator state");
 					reject();
 				});
@@ -103,7 +103,7 @@ class AbstractBaseEmulator {
 		}
 	}
 	resetEmuCallback() {
-		return () => this.resetEmulator().then(() => console.log("Emulator restored."))catch(e => console.log(e));
+		return () => this.resetEmulator().then(() => console.log("Emulator restored.")).catch(e => console.log(e));
 	}
 	resetEmulator() {
 		return new Promise((resolve, reject) => {

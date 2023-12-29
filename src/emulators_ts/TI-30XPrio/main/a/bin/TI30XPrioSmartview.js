@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
 	"value": true
 });
 const smartview = require("../../AbstractSmartviewEmulator");
-const lcd = require("./TI30XPrioLCD");
+const priolcd = require("./TI30XPrioLCD");
 const keypad = require("./TI30XPrioSmartviewKeypad");
 const dolphin = require("./dolphin");
 const asic = require("../../LapisASICSmartView");
@@ -38,7 +38,7 @@ class TI30XPrioSmartview extends smartview.AbstractSmartviewEmulator {
 			"DisplayMode": "MATHPRINT",
 			"AngleMode": "DEG"
 		};
-		const lcd = new lcd.TI30XPrioLCD("calculatorDiv");
+		const lcd = new priolcd.TI30XPrioLCD("calculatorDiv");
 		this.settings = settings;
 		this.asic = new asic.LapisASICSmartView(settings);
 		this.lcd = lcd;

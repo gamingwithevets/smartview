@@ -1,3 +1,6 @@
 [submodule "src/emulators_ts/ts-md5"]
 	path = src/emulators_ts/ts-md5
 	url = https://github.com/cotag/ts-md5.git
+[submodule "src/emulators_ts/buffer"]
+	path = src/emulators_ts/buffer
+	url = https://github.com/feross/buffer

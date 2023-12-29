@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
 	"value": true
 });
 const utilities = require("./Utilities");
-const md5 = require("ts-md5/dist/md5");
+const md5 = require("./ts-md5/dist/md5");
 class StatefileInfo {
 	toCommands() {
 		const info = {
@@ -51,7 +51,7 @@ class StatefileManager {
 		return md5_str.end();
 	}
 	getState(_0x5dace3, _0x4a802a) {
-		return new Promise((_0x5706a9, _0xd65266) => {
+		return new Promise((resolve, reject) => {
 			const _0x28ddb7 = [];
 			const statefile = new Statefile();
 			for (const _0x24800e of _0x5dace3) {
@@ -67,7 +67,7 @@ class StatefileManager {
 			statefile.info.compatibility = 0x1;
 			statefile.info.productflavor = _0x4a802a.productflavor;
 			statefile.info.checksum = this.getMd5String(statefile);
-			_0x5706a9(JSON.stringify(statefile));
+			resolve(JSON.stringify(statefile));
 		});
 	}
 	setStateFromStatefile(state, statefile) {

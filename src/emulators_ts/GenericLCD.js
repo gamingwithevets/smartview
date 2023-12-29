@@ -68,7 +68,7 @@ class lcd {
 			const canvas = document.createElement("canvas");
 			const calc_model = document.getElementById(this.calcModel);
 			const calc_div_id = document.getElementById(this.calcDivId);
-			const screen = document.querySelectorAll("*[id^=\"" + this.calcModel + "_CALCSCREEN\");
+			const screen = document.querySelectorAll("*[id^=\"" + this.calcModel + "_CALCSCREEN\"");
 			if (calc_model !== null && screen.length > 0 && calc_div_id !== null) {
 				while (calc_div_id.firstChild) {
 					calc_div_id.removeChild(calc_div_id.firstChild);

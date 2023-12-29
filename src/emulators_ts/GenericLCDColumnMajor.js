@@ -147,27 +147,27 @@ class GenericLCDColumnMajor extends generic_lcd.GenericLCD {
 				break;
 		}
 	}
-	drawIcon(idx, y, data, visible) {
-		if (visible) {
-			this.canvasContext.fillStyle = "#000000";
-			for (let j = 0; j < data.length; j++) {
-				const dat = data[j];
-				if (dat !== 0) {
-					y = y;
-					for (let i = 0; i < 8; i++) {
-						const _0x2bf026 = dat >> i & 1;
-						if (_0x2bf026 !== 0) {
-							this.canvasContext.fillRect(idx, y, 2, 2);
-						}
-						y += 2;
-					}
-				}
-				idx += 2;
-			}
-		} else {
-			this.canvasContext.fillStyle = "white";
-			this.canvasContext.fillRect(idx, y, data.length * 2, 16);
-		}
-	}
+    drawIcon(base_x, base_y, data, visible) {
+        if (visible) {
+            this.canvasContext.fillStyle = '#000000';
+            let saved_y = base_y;
+            for (let id_x = 0; id_x < data.length; id_x++) {
+                let column = data[id_x];
+                if (column !== 0) {
+                    base_y = saved_y;
+                    for (let id_y = 0; id_y < 8; id_y++) {
+                        let pixel = column >> id_y & 1;
+                        if (pixel !== 0) {
+                            this.canvasContext.fillRect(base_x, base_y, 2, 2);
+                        }
+                        base_y += 2;
+                    }
+                }
+                base_x += 2;
+            }
+        } else {
+            this.canvasContext.fillStyle = 'white', this.canvasContext.fillRect(base_x, base_y, data.length * 2, 16);
+        }
+    }
 }
 exports.GenericLCDColumnMajor = GenericLCDColumnMajor;

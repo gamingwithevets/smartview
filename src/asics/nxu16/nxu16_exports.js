@@ -401,7 +401,7 @@ class mcu {
 		for (let i = -1; i < 10; i++) {
 			stack.push(mcu.dataMemory.get16(0, mcu.sp + 2 * i).toString(16));
 		}
-		return "Stack contents:  + stack.join(", ") + ";
+		return "Stack contents: [" + stack.join(", ") + "]";
 	}
 	initialize(size) {
 		this.codeMemory.setData(size);

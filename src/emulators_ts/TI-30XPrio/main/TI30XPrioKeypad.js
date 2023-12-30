@@ -3,11 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
 	"value": true
 });
-const _0x8c5c97 = require("../../GenericKeypad");
-class TI30XPrioKeypad extends _0x8c5c97.GenericKeypad {
-	constructor(_0x3436fa, _0x44c937) {
-		const _0x325a75 = {
-			"svgUrl": _0x3436fa.FaceplateLocation,
+const generic_keypad = require("../../GenericKeypad");
+class TI30XPrioKeypad extends generic_keypad.GenericKeypad {
+	constructor(sv_settings, asic_instance) {
+		const settings = {
+			"svgUrl": sv_settings.FaceplateLocation,
 			"keymapExtension": '',
 			"SVGKeys": [{
 				"SVGKey": "TI30XPRIO_KEY_2ND_NONE",
@@ -327,11 +327,11 @@ class TI30XPrioKeypad extends _0x8c5c97.GenericKeypad {
 			}],
 			"blockedKeyCommands": ["ON", "OFF"]
 		};
-		const _0x9f518e = _0x3436fa.elementId || "calculatorDiv";
-		super(_0x9f518e, _0x325a75, _0x44c937);
+		const divId = sv_settings.elementId || "calculatorDiv";
+		super(divId, settings, asic_instance);
 	}
-	["setKey"](_0x49bb04) {
-		if (_0x49bb04 === 0x29 && this.asic.is2ndModeEnabled()) {
+	setKey(key) {
+		if (key === 0x29 && this.asic.is2ndModeEnabled()) {
 			if (this.resetEmuCallback !== undefined) {
 				console.log("Trigger Reset Emulator");
 				return this.resetEmuCallback();
@@ -339,10 +339,10 @@ class TI30XPrioKeypad extends _0x8c5c97.GenericKeypad {
 				console.log("Reset callback not available");
 			}
 		}
-		return super.setKey(_0x49bb04);
+		return super.setKey(key);
 	}
-	["setResetEmuCallback"](_0x50bc22) {
-		this.resetEmuCallback = _0x50bc22;
+	setResetEmuCallback(callback) {
+		this.resetEmuCallback = callback;
 	}
 }
 exports.TI30XPrioKeypad = TI30XPrioKeypad;

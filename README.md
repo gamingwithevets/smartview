@@ -9,11 +9,9 @@ There's a [free deobfuscator](https://obf-io.deobfuscate.io/) online specificall
 Unfortunately, most variable names were lost during the obfuscation. This project aims to restore those variable names and make the code readable again, as well as restore the original source tree of the emulator.
 
 ## Current state
-Currently, the source tree is not yet perfect. The code is slightly incorrect which causes graphical glitches in the final build. This may be fixed in the future.
+Currently, the source tree is not yet perfect. The code is slightly incorrect which causes bugs in the final build. This may be fixed in the future.
 
 ## Building
 0. Install Node.js and install the [browserify](https://www.npmjs.com/package/browserify) package.
 1. Clone the repository and the submodules.
 2. Run the appropriate build script for your platform.
-
-Currently, only the TI-30X Prio `min.js` is built. TI-30X Pro and TI-30X Plus will be added in the future.

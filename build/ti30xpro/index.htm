@@ -2,10 +2,10 @@
 <html>
 
 <head>
-    <title>TI-30X Prio Emulator</title>
+    <title>TI-30X Pro Emulator</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link href="css/ti30xpriosmartview-min.css" media="screen" rel="Stylesheet" type="text/css" />
+    <link href="css/ti30xprosmartview-min.css" media="screen" rel="Stylesheet" type="text/css" />
     <style type="text/css">
         body {
             margin: 0px;
@@ -18,11 +18,11 @@
 <body>
     <div id="calculatorDiv" class="calculatorDiv" tabindex="0" />
     <script type="text/javascript">var app = new Object(); app.setScreenUnidimentionalDataStrComp = (ignored) => {};</script>
-    <script type="text/javascript" src="js/ti30xpriosmartview-min.js"></script>
+    <script type="text/javascript" src="js/ti30xprosmartview-min.js"></script>
     <script type="text/javascript">
         var calc_instance;
         window.addEventListener("DOMContentLoaded", function() {
-            calc_instance = new TIExamCalc.TI30XPrioSmartview();
+            calc_instance = new TIExamCalc.TI30XProSmartview();
 			calc_instance.launchEmulator();
         });
         /*window.addEventListener("resize", function () {

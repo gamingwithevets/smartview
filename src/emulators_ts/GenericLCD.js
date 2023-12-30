@@ -94,7 +94,7 @@ class lcd {
 		if (this.created) {
 			const calc_model = document.getElementById(this.calcModel);
 			const display_div = document.getElementById("displayDiv");
-			const screen = document.querySelectorAll("*[id^=\"" + this.calcModel + "_CALCSCREEN\ rect");
+			const screen = document.querySelectorAll("*[id^=\"" + this.calcModel + "_CALCSCREEN\"] rect");
 			if (calc_model !== null && screen.length > 0) {
 				const screen_0 = screen[0];
 				const viewbox = calc_model.getAttribute("viewBox").split(/\s*,\s*|\s+/);

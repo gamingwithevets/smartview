@@ -11,57 +11,57 @@ class GenericASIC {
 		this.stateListeners = [];
 		this.state = asic.ASICState.INITIALIZING;
 	}
-	addScreenListener(_0x36f800) {
-		this.removeScreenListener(_0x36f800);
-		this.screenListeners.push(_0x36f800);
+	addScreenListener(listener) {
+		this.removeScreenListener(listener);
+		this.screenListeners.push(listener);
 	}
-	removeScreenListener(_0x245650) {
-		this.screenListeners = this.screenListeners.filter(_0x347fa1 => _0x347fa1 !== _0x245650);
+	removeScreenListener(listener) {
+		this.screenListeners = this.screenListeners.filter(l => l !== listener);
 	}
-	notifyScreenListeners(_0x360dd5) {
-		for (const _0x18e72a of this.screenListeners) {
-			_0x18e72a.screenChanged(_0x360dd5);
+	notifyScreenListeners(screen) {
+		for (const listener of this.screenListeners) {
+			listener.screenChanged(screen);
 		}
 	}
-	notifyTopIconScreenListeners(_0x2247e6) {
-		for (const _0xcc1303 of this.screenListeners) {
-			_0xcc1303.topIconsChanged(_0x2247e6);
+	notifyTopIconScreenListeners(sbar) {
+		for (const listener of this.screenListeners) {
+			listener.topIconsChanged(sbar);
 		}
 	}
-	addKeypadMetaStateListener(_0x8fe42d) {
-		this.removeKeypadMetaStateListener(_0x8fe42d);
-		this.keypadMetaStateListeners.push(_0x8fe42d);
+	addKeypadMetaStateListener(listener) {
+		this.removeKeypadMetaStateListener(listener);
+		this.keypadMetaStateListeners.push(listener);
 	}
-	removeKeypadMetaStateListener(_0x42a00e) {
-		this.keypadMetaStateListeners = this.keypadMetaStateListeners.filter(_0x37d06f => _0x37d06f !== _0x42a00e);
+	removeKeypadMetaStateListener(listener) {
+		this.keypadMetaStateListeners = this.keypadMetaStateListeners.filter(l => l !== listener);
 	}
-	notifyKeypadMetaStateListeners(_0x17f71e) {
-		this.keypadMetaState = _0x17f71e;
-		for (const _0x1109c4 of this.keypadMetaStateListeners) {
-			_0x1109c4.keypadMetaStateChanged(_0x17f71e);
+	notifyKeypadMetaStateListeners(state) {
+		this.keypadMetaState = state;
+		for (const listener of this.keypadMetaStateListeners) {
+			listener.keypadMetaStateChanged(state);
 		}
 	}
-	addStateListener(_0x5b918b) {
-		this.removeStateListener(_0x5b918b);
-		this.stateListeners.push(_0x5b918b);
+	addStateListener(listener) {
+		this.removeStateListener(listener);
+		this.stateListeners.push(listener);
 	}
-	removeStateListener(_0x47e2bc) {
-		this.stateListeners = this.stateListeners.filter(_0x2bde25 => _0x2bde25 !== _0x47e2bc);
+	removeStateListener(listener) {
+		this.stateListeners = this.stateListeners.filter(_0x2bde25 => _0x2bde25 !== listener);
 	}
-	notifyStateListeners(_0x45cd65) {
-		this.state = _0x45cd65;
-		for (const _0x3f8d21 of this.stateListeners) {
-			_0x3f8d21.asicStateChanged(_0x45cd65);
+	notifyStateListeners(state) {
+		this.state = state;
+		for (const listener of this.stateListeners) {
+			listener.asicStateChanged(state);
 		}
 	}
 	getASICState() {
-		return new Promise((_0x1fab14, _0x1a9315) => {
-			_0x1fab14(this.state);
+		return new Promise((resolve, reject) => {
+			resolve(this.state);
 		});
 	}
 	getKeypadMetaState() {
-		return new Promise((_0x4e9b3d, _0x8d6958) => {
-			_0x4e9b3d(this.keypadMetaState);
+		return new Promise((resolve, reject) => {
+			resolve(this.keypadMetaState);
 		});
 	}
 }

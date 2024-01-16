@@ -5,15 +5,15 @@ var _0xea1af0 = this && this.__awaiter || function (_0x3a408c, _0x17450f, _0x27e
 		function _0x410cf1(_0x1d5ddd) {
 			try {
 				_0x54325b(_0x27ea69.next(_0x1d5ddd));
-			} catch (_0x137809) {
-				_0x549755(_0x137809);
+			} catch (e) {
+				_0x549755(e);
 			}
 		}
 		function _0x40bde6(_0x5d9170) {
 			try {
-				_0x54325b(_0x27ea69throw(_0x5d9170));
-			} catch (_0x456c6b) {
-				_0x549755(_0x456c6b);
+				_0x54325b(_0x27ea69.throw(_0x5d9170));
+			} catch (e) {
+				_0x549755(e);
 			}
 		}
 		function _0x54325b(_0x354f1e) {
@@ -28,6 +28,7 @@ var _0xea1af0 = this && this.__awaiter || function (_0x3a408c, _0x17450f, _0x27e
 		_0x54325b((_0x27ea69 = _0x27ea69.apply(_0x3a408c, _0x17450f || [])).next());
 	});
 };
+
 Object.defineProperty(exports, "__esModule", {
 	"value": true
 });
@@ -245,17 +246,17 @@ class AbstractSmartviewEmulator extends AbstractBaseEmulator.AbstractBaseEmulato
 		return _0xea1af0(this, undefined, undefined, function* () {
 			if (typeof this.taCommand !== "undefined") {
 				console.log("TACommand received.");
-				const _0x313a8a = this.taCommand.getTABuffer().split(",").map(Number);
-				const _0x565b7d = Uint8Array.from(_0x313a8a);
-				const _0x44d6b3 = this.taCommand.getLengthDesignation();
+				const arry = this.taCommand.getTABuffer().split(",").map(Number);
+				const mem = Uint8Array.from(arry);
+				const val = this.taCommand.getLengthDesignation();
 				yield this.isUARTReady();
-				let _0x226739;
-				if (_0x44d6b3 > 0) {
-					_0x226739 = yield this.asic.setTABuffer(_0x565b7d, _0x44d6b3);
+				let response;
+				if (val > 0) {
+					response = yield this.asic.setTABuffer(mem, val);
 				} else {
-					_0x226739 = yield this.asic.setTABuffer(_0x565b7d);
+					response = yield this.asic.setTABuffer(mem);
 				}
-				this.taCommand.setResponse(_0x226739);
+				this.taCommand.setResponse(response);
 			} else {
 				console.log("TACommand not found!");
 			}

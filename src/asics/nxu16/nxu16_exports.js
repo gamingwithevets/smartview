@@ -2297,8 +2297,8 @@ class NXU16_MCU {
 					let er0 = this_.get16BitRegister(this_, 0);
 					let er2 = this_.get16BitRegister(this_, 2);
 					if (this_.taRspBuffer === null) {
-						let addr = this_.dataMemory.get8(0, er0) | this_.dataMemory.get8(0, er0 + 1) << 8;
-						this_.taRspLength = addr + 2;
+						let len = this_.dataMemory.get8(0, er0) | this_.dataMemory.get8(0, er0 + 1) << 8;
+						this_.taRspLength = len + 2;
 						this_.taRspBuffer = new Uint8Array(this_.taRspLength);
 					}
 					for (let i = 0; i < er2; i++) {

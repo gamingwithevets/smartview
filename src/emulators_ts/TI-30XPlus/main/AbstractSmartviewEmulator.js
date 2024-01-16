@@ -245,17 +245,17 @@ class AbstractSmartviewEmulator extends AbstractBaseEmulator.AbstractBaseEmulato
 		return _0xea1af0(this, undefined, undefined, function* () {
 			if (typeof this.taCommand !== "undefined") {
 				console.log("TACommand received.");
-				const _0x313a8a = this.taCommand.getTABuffer().split(",").map(Number);
-				const _0x565b7d = Uint8Array.from(_0x313a8a);
-				const _0x44d6b3 = this.taCommand.getLengthDesignation();
+				const arry = this.taCommand.getTABuffer().split(",").map(Number);
+				const mem = Uint8Array.from(arry);
+				const val = this.taCommand.getLengthDesignation();
 				yield this.isUARTReady();
-				let _0x226739;
-				if (_0x44d6b3 > 0) {
-					_0x226739 = yield this.asic.setTABuffer(_0x565b7d, _0x44d6b3);
+				let response;
+				if (val > 0) {
+					response = yield this.asic.setTABuffer(mem, val);
 				} else {
-					_0x226739 = yield this.asic.setTABuffer(_0x565b7d);
+					response = yield this.asic.setTABuffer(mem);
 				}
-				this.taCommand.setResponse(_0x226739);
+				this.taCommand.setResponse(response);
 			} else {
 				console.log("TACommand not found!");
 			}

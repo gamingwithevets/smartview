@@ -50,22 +50,22 @@ class StatefileManager {
 		md5_str.appendStr(statefile.info.statefileversion);
 		return md5_str.end();
 	}
-	getState(_0x5dace3, _0x4a802a) {
+	getState(statelist, state) {
 		return new Promise((resolve, reject) => {
-			const _0x28ddb7 = [];
+			const data = [];
 			const statefile = new Statefile();
-			for (const _0x24800e of _0x5dace3) {
-				const _0x3e45c9 = _0x24800e.getState();
-				const _0x35e24c = utilities.Utilities.arrayToRLEPlusString(_0x3e45c9);
-				_0x28ddb7.push(_0x35e24c);
+			for (const state of statelist) {
+				const ary = state.getState();
+				const rle = utilities.Utilities.arrayToRLEPlusString(ary);
+				data.push(rle);
 			}
-			statefile.data = _0x28ddb7;
+			statefile.data = data;
 			statefile.info = new StatefileInfo();
-			statefile.info.statefiletype = _0x4a802a.statefiletype;
-			statefile.info.osversion = _0x4a802a.osversion;
+			statefile.info.statefiletype = state.statefiletype;
+			statefile.info.osversion = state.osversion;
 			statefile.info.statefileversion = "2.1.0";
 			statefile.info.compatibility = 0x1;
-			statefile.info.productflavor = _0x4a802a.productflavor;
+			statefile.info.productflavor = state.productflavor;
 			statefile.info.checksum = this.getMd5String(statefile);
 			resolve(JSON.stringify(statefile));
 		});
@@ -85,7 +85,7 @@ class StatefileManager {
 			resolve();
 		});
 	}
-	setState(_0x414bfa, state) {
+	setState(state, param_2) {
 		return new Promise((resolve, reject) => {
 			let statefile = new Statefile();
 			try {
@@ -93,7 +93,7 @@ class StatefileManager {
 			} catch (e) {
 				reject(e);
 			}
-			this.setStateFromStatefile(_0x414bfa, statefile).then(() => {
+			this.setStateFromStatefile(state, statefile).then(() => {
 				resolve();
 			});
 		});

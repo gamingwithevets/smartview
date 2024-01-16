@@ -228,7 +228,7 @@ class GenericLCDColumnMajor extends generic_lcd.GenericLCD {
 	screenChanged(data) {
 		super.saveScreenData(data);
 		this.canvasContext.fillStyle = "white";
-		this.canvasContext.fillRect(0b00000000, 16, this.width, this.height);
+		this.canvasContext.fillRect(0, 16, this.width, this.height);
 		this.canvasContext.fillStyle = "#000000";
 		let x = 0;
 		let y = 16;

@@ -1311,7 +1311,7 @@ class NXU16_MCU {
 			result = this_.setZeroAndSignFlags_8bit(this_, op0, op1, result);
 			this_.setOperationResult8bit(this_, opcode >> 8 & 0xf, result);
 		}
-
+	}
 	mov_ERn_ERm(this_, opcode) {
 		let op0;
 		let op1;
@@ -1863,6 +1863,7 @@ class NXU16_MCU {
 				this_.pushValueToStack(this_, this_.ea, 2);
 			}
 		}
+	}
 	use_DSR(this_, opcode) {
 		if (opcode === 0xfe9f) {
 			// DSR <- DSR
@@ -1948,6 +1949,7 @@ class NXU16_MCU {
 				this_.pc = this_.ecsr << 16 | this_.pc;
 			}
 		}
+	}
 	lea_obj(this_, opcode) {
 		let obj_check = opcode & 0xf00f;
 		if (obj_check === 0xf00a) {
@@ -1967,6 +1969,7 @@ class NXU16_MCU {
 			this_.ea = dadr;
 			this_.pc += 2;
 		}
+	}
 	daa_obj(this_, opcode) {
 		const carry = (this_.psw & this_.NXU16_MASK_C_FLAG) !== 0;
 		const half_carry = (this_.psw & this_.NXU16_MASK_HC_FLAG) !== 0;

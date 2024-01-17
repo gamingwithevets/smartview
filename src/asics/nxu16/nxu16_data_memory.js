@@ -94,13 +94,13 @@ class NXU16_DataMemory {
 					}
 					break;
 				case this.DEVICE_ADDRESS_WDTMOD:
-					this.watchdog.setMode(val & 0x3);
+					this.watchdog.setMode(val & 3);
 					break;
 				case this.DEVICE_ADDRESS_LTBINTL:
-					const _0x34f666 = val & 0xf;
-					const _0x2b8c95 = val >> 4 & 0xf;
-					this.timers[0].setMode(_0x34f666);
-					this.timers[1].setMode(_0x2b8c95);
+					const tmode0 = val & 0xf;
+					const tmode1 = val >> 4 & 0xf;
+					this.timers[0].setMode(tmode0);
+					this.timers[1].setMode(tmode1);
 					break;
 				case this.DEVICE_ADDRESS_VLSCONL:
 					this.mem[addr] = 0x34;

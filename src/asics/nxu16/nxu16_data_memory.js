@@ -72,8 +72,8 @@ class NXU16_DataMemory {
 		this.mem[this.DEVICE_ADDRESS_WDTMOD] = 0x82;
 		this.mem[this.DEVICE_ADDRESS_LTBINTH] = 0x6;
 		this.mem[this.DEVICE_ADDRESS_LTBINTL] = 0x30;
-		for (let _0x48014e = this.INTERRUPT_IE01; _0x48014e < 0xf04f; _0x48014e++) {
-			this.mem[_0x48014e] = 0;
+		for (let i = this.INTERRUPT_IE01; i < 0xf04f; i++) {
+			this.mem[i] = 0;
 		}
 	}
 	set8(seg, val, addr) {

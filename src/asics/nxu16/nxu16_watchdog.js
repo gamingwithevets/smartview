@@ -13,10 +13,10 @@ class NXU16_Watchdog {
 		this.callback = callback;
 		this.mode = 3;
 	}
-	["setMode"](mode) {
+	setMode(mode) {
 		this.mode = mode;
 	}
-	["start"]() {
+	start() {
 		var interval = 100000;
 		switch (this.mode) {
 			case 0:
@@ -34,7 +34,7 @@ class NXU16_Watchdog {
 		}
 		this.intervalReference = setInterval(this.callback, interval);
 	}
-	["stop"]() {
+	stop() {
 		clearInterval(this.intervalReference);
 	}
 }

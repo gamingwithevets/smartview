@@ -7,190 +7,190 @@ Object.defineProperty(exports, "__esModule", {
 var buffer = require("buffer");
 
 class Utilities {
-	static hasClass(_0x2df6f8, _0x199146) {
-		let _0x15b3dd = false;
-		if (_0x2df6f8 instanceof SVGElement) {
-			if (_0x2df6f8.className.baseVal !== undefined) {
-				_0x15b3dd = _0x2df6f8.className.baseVal.indexOf(_0x199146) > -1;
+	static hasClass(obj, element) {
+		let hasclass = false;
+		if (obj instanceof SVGElement) {
+			if (obj.className.baseVal !== undefined) {
+				hasclass = obj.className.baseVal.indexOf(element) > -1;
 			}
-		} else if (_0x2df6f8.className !== undefined && _0x2df6f8.className !== '') {
-			_0x15b3dd = _0x2df6f8.className.indexOf(_0x199146) > -1;
+		} else if (obj.className !== undefined && obj.className !== '') {
+			hasclass = obj.className.indexOf(element) > -1;
 		}
-		return _0x15b3dd;
+		return hasclass;
 	}
-	static addClass(_0x517f52, _0x579ac5) {
-		if (!Utilities.hasClass(_0x517f52, _0x579ac5)) {
-			if (_0x517f52.classList !== undefined) {
-				_0x517f52.classList.add(_0x579ac5);
-			} else if (_0x517f52 instanceof SVGElement) {
-				_0x517f52.className.baseVal += " " + _0x579ac5;
+	static addClass(obj, ekenebt) {
+		if (!Utilities.hasClass(obj, ekenebt)) {
+			if (obj.classList !== undefined) {
+				obj.classList.add(ekenebt);
+			} else if (obj instanceof SVGElement) {
+				obj.className.baseVal += " " + ekenebt;
 			} else {
-				_0x517f52.className += " " + _0x579ac5;
+				obj.className += " " + ekenebt;
 			}
 		}
 	}
-	static removeClass(_0x58b66d, _0x1b8328) {
-		if (this.hasClass(_0x58b66d, _0x1b8328)) {
-			const _0x42e763 = new RegExp("(\\s|^)" + _0x1b8328 + "(\\s|$)");
-			if (_0x58b66d.classList !== undefined) {
-				_0x58b66d.classList.remove(_0x1b8328);
+	static removeClass(obj, element) {
+		if (this.hasClass(obj, element)) {
+			const _0x42e763 = new RegExp("(\\s|^)" + element + "(\\s|$)");
+			if (obj.classList !== undefined) {
+				obj.classList.remove(element);
 			} else {
-				if (_0x58b66d instanceof SVGElement) {
-					_0x58b66d.className.baseVal = _0x58b66d.className.baseVal.replace(_0x42e763, " ");
-				} else if (_0x58b66d.className !== undefined && _0x58b66d.className !== '') {
-					_0x58b66d.className = _0x58b66d.className.replace(_0x42e763, " ");
+				if (obj instanceof SVGElement) {
+					obj.className.baseVal = obj.className.baseVal.replace(_0x42e763, " ");
+				} else if (obj.className !== undefined && obj.className !== '') {
+					obj.className = obj.className.replace(_0x42e763, " ");
 				}
 			}
 		}
 	}
-	static removePrefixedClass(_0x692990, _0x14036f) {
-		let _0x16c288;
-		if (_0x692990 instanceof SVGElement) {
-			_0x16c288 = _0x692990.className.baseVal.split(" ");
-		} else if (_0x692990.className !== undefined) {
-			_0x16c288 = _0x692990.className.split(" ");
+	static removePrefixedClass(obj, element) {
+		let objs;
+		if (obj instanceof SVGElement) {
+			objs = obj.className.baseVal.split(" ");
+		} else if (obj.className !== undefined) {
+			objs = obj.className.split(" ");
 		}
-		for (let _0x634db8 = _0x16c288.length - 1; _0x634db8 >= 0; _0x634db8--) {
-			if (_0x16c288[_0x634db8] && _0x16c288[_0x634db8].indexOf(_0x14036f) === 0) {
-				this.removeClass(_0x692990, _0x16c288[_0x634db8]);
+		for (let i = objs.length - 1; i >= 0; i--) {
+			if (objs[i] && objs[i].indexOf(element) === 0) {
+				this.removeClass(obj, objs[i]);
 			}
 		}
 	}
-	static loadSVG(_0x4b5454) {
-		return new Promise((_0x5cfdec, _0x6bafe8) => {
-			const _0x3a49ab = new XMLHttpRequest();
-			_0x3a49ab.onerror = function (_0x20d7cd) {
-				_0x6bafe8(_0x20d7cd instanceof ErrorEvent ? _0x20d7cd.error : "Error on load SVG");
+	static loadSVG(url) {
+		return new Promise((resolve, reject) => {
+			const request = new XMLHttpRequest();
+			request.onerror = function (evt) {
+				reject(evt instanceof ErrorEvent ? evt.error : "Error on load SVG");
 			};
-			_0x3a49ab.onload = function (_0x1c031f) {
-				if (_0x3a49ab.status === 200) {
-					const _0x1460b2 = _0x3a49ab.responseXML;
-					const _0x39f0f4 = _0x1460b2.documentElement;
-					const _0x368266 = document.importNode(_0x39f0f4, true);
-					let _0x3e5726 = typeof _0x1460b2;
-					if (_0x3e5726 === "undefined" || _0x1460b2 === null) {
-						_0x6bafe8("SVG was undefined or null");
+			request.onload = function (evt) {
+				if (request.status === 200) {
+					const response = request.responseXML;
+					const element = response.documentElement;
+					const node = document.importNode(element, true);
+					let resptype = typeof response;
+					if (resptype === "undefined" || response === null) {
+						reject("SVG was undefined or null");
 					}
-					_0x3e5726 = typeof _0x368266;
-					if (_0x3e5726 === "undefined" || _0x368266 === null) {
-						_0x6bafe8("SVG (after importNode) was undefined or null");
+					resptype = typeof node;
+					if (resptype === "undefined" || node === null) {
+						reject("SVG (after importNode) was undefined or null");
 					}
-					if (_0x368266.getAttribute("viewBox") === undefined) {
-						_0x6bafe8("SVG viewBox attribute not found!");
+					if (node.getAttribute("viewBox") === undefined) {
+						reject("SVG viewBox attribute not found!");
 					}
-					_0x5cfdec(_0x368266);
+					resolve(node);
 				} else {
 					console.log("agghhh");
-					_0x6bafe8();
+					reject();
 				}
 			};
-			_0x3a49ab.open("GET", _0x4b5454, true);
-			_0x3a49ab.responseType = "document";
-			_0x3a49ab.send();
+			request.open("GET", url, true);
+			request.responseType = "document";
+			request.send();
 		});
 	}
-	static loadROM(_0x5a40df) {
-		return new Promise((_0x3a30b6, _0x1f6bef) => {
-			const _0x503a21 = new XMLHttpRequest();
-			let _0x587180;
-			_0x503a21.timeout = this.DEFAULT_TIMEOUT;
-			_0x503a21.responseType = '';
-			_0x503a21.ontimeout = () => {
-				_0x1f6bef(_0x503a21.statusText);
+	static loadROM(url) {
+		return new Promise((resolve, reject) => {
+			const request = new XMLHttpRequest();
+			let response;
+			request.timeout = this.DEFAULT_TIMEOUT;
+			request.responseType = '';
+			request.ontimeout = () => {
+				reject(request.statusText);
 			};
-			_0x503a21.onerror = () => {
-				_0x1f6bef(_0x503a21.statusText);
+			request.onerror = () => {
+				reject(request.statusText);
 			};
-			_0x503a21.onload = () => {
-				if (_0x503a21.status === 200) {
-					_0x587180 = _0x503a21.responseText;
-					_0x3a30b6(_0x587180);
+			request.onload = () => {
+				if (request.status === 200) {
+					response = request.responseText;
+					resolve(response);
 				} else {
-					_0x1f6bef(_0x503a21.statusText);
+					reject(request.statusText);
 				}
 			};
-			_0x503a21.open("GET", _0x5a40df, true);
-			_0x503a21.send();
+			request.open("GET", url, true);
+			request.send();
 		});
 	}
-	static pixelDataToString(_0x5650fe) {
-		return _0x5650fe === 0 ? String.fromCharCode(0x100) : String.fromCharCode(_0x5650fe);
+	static pixelDataToString(data) {
+		return data === 0 ? String.fromCharCode(0x100) : String.fromCharCode(data);
 	}
-	static arrayToRLEPlusString(_0x40c360, _0x2167e4, _0x2f8252) {
-		let _0x1336d7 = typeof _0x2167e4;
-		let _0x414a6a = typeof _0x2f8252;
-		let _0xa6d1af = 1;
-		let _0x5f285a = [];
-		let _0x3e14ba;
-		let _0x566db8;
-		let _0x33a73d;
-		if (typeof _0x40c360 === "undefined" || _0x40c360 === null) {
+	static arrayToRLEPlusString(arr, i, len) {
+		let itype = typeof i;
+		let len_type = typeof len;
+		let val2 = 1;
+		let rle_array = [];
+		let val;
+		let valtype;
+		let rle_str;
+		if (typeof arr === "undefined" || arr === null) {
 			return '';
 		}
-		if (_0x1336d7 === "undefined") {
-			_0x2167e4 = 0;
+		if (itype === "undefined") {
+			i = 0;
 		}
-		if (_0x414a6a === "undefined") {
-			_0x2f8252 = _0x40c360.length;
+		if (len_type === "undefined") {
+			len = arr.length;
 		}
-		_0x3e14ba = _0x40c360[_0x2167e4++];
-		for (_0x2167e4; _0x2167e4 < _0x2f8252; _0x2167e4 += 1) {
-			if (_0x3e14ba !== _0x40c360[_0x2167e4]) {
-				_0x566db8 = typeof _0x3e14ba;
-				if (_0x566db8 === "undefined") {
+		val = arr[i++];
+		for (i; i < len; i += 1) {
+			if (val !== arr[i]) {
+				valtype = typeof val;
+				if (valtype === "undefined") {
 					debugger;
 				}
-				if (_0x3e14ba === 35) {
-					_0x5f285a.push("#");
-					_0x5f285a.push("#");
+				if (val === 35) {
+					rle_array.push("#");
+					rle_array.push("#");
 				} else {
-					_0x5f285a.push(String.fromCharCode(_0x3e14ba));
+					rle_array.push(String.fromCharCode(val));
 				}
-				if (_0xa6d1af > 1) {
-					_0x5f285a.push("#");
-					_0x5f285a.push(_0xa6d1af);
-					_0x5f285a.push("#");
+				if (val2 > 1) {
+					rle_array.push("#");
+					rle_array.push(val2);
+					rle_array.push("#");
 				}
-				_0x3e14ba = _0x40c360[_0x2167e4];
-				_0xa6d1af = 1;
+				val = arr[i];
+				val2 = 1;
 			} else {
-				_0xa6d1af++;
+				val2++;
 			}
 		}
-		if (_0x3e14ba === 35) {
-			_0x5f285a.push("#");
-			_0x5f285a.push("#");
+		if (val === 35) {
+			rle_array.push("#");
+			rle_array.push("#");
 		} else {
-			_0x5f285a.push(String.fromCharCode(_0x3e14ba));
+			rle_array.push(String.fromCharCode(val));
 		}
-		if (_0xa6d1af > 1) {
-			_0x5f285a.push("#");
-			_0x5f285a.push(_0xa6d1af);
-			_0x5f285a.push("#");
+		if (val2 > 1) {
+			rle_array.push("#");
+			rle_array.push(val2);
+			rle_array.push("#");
 		}
-		const _0x158eb6 = _0x5f285a.join('');
+		const obj = rle_array.join('');
 		try {
-			_0x33a73d = "RLE_NUMERIC" + buffer.Buffer.from(_0x158eb6).toString("base64");
-		} catch (_0xff8f1d) {
-			console.log("EXCEPTION in arrayToRLEPlusString: " + _0xff8f1d + " name:" + _0xff8f1d.name + " message:" + _0xff8f1d.message);
-			_0x33a73d = '';
+			rle_str = "RLE_NUMERIC" + buffer.Buffer.from(obj).toString("base64");
+		} catch (e) {
+			console.log("EXCEPTION in arrayToRLEPlusString: " + e + " name:" + e.name + " message:" + e.message);
+			rle_str = '';
 		}
-		return _0x33a73d;
+		return rle_str;
 	}
 	static rlePlusStringToArray(string, size) {
-		const _0x1e395b = "#".charAt(0);
-		const _0x2dbbf2 = "#".charCodeAt(0);
-		let _0x1a4e36;
+		const hash_char = "#".charAt(0);
+		const hash_charcode = "#".charCodeAt(0);
+		let val;
 		let ret_array;
-		let _0x158081 = 0;
-		let _0x50b8ed = 0;
-		let _0x2171e7 = 0;
+		let str_char = 0;
+		let int_parsed = 0;
+		let i = 0;
 		let strlen = 0;
-		let _0x21f834 = 0;
-		let _0x261450 = 0;
-		let _0x2222be = 0;
-		let _0x594ece;
-		let _0x593d6b = 1;
+		let index = 0;
+		let j = 0;
+		let idx = 0;
+		let chr;
+		let parsed_int = 1;
 		if (typeof string === "undefined" || string == null) {
 			return new Uint8Array(0);
 		}
@@ -203,65 +203,65 @@ class Utilities {
 		if (string.substring(0, "RLE_NUMERIC".length) === "RLE_NUMERIC") {
 			string = buffer.Buffer.from(string.substring("RLE_NUMERIC".length), "base64").toString();
 			strlen = string.length;
-			_0x594ece = string.charCodeAt(_0x2222be);
-			if (_0x594ece === _0x2dbbf2 && string.charAt(_0x2222be) === _0x1e395b) {
-				_0x2222be++;
+			chr = string.charCodeAt(idx);
+			if (chr === hash_charcode && string.charAt(idx) === hash_char) {
+				idx++;
 			}
-			_0x2222be++;
-			if (string.charAt(_0x2222be) === "#" && string.charAt(_0x2222be + 1) !== "#") {
-				_0x2222be++;
-				_0x593d6b = parseInt(string.substring(_0x2222be, string.indexOf("#", _0x2222be)), 10);
-				_0x2222be = string.indexOf("#", _0x2222be) + 1;
+			idx++;
+			if (string.charAt(idx) === "#" && string.charAt(idx + 1) !== "#") {
+				idx++;
+				parsed_int = parseInt(string.substring(idx, string.indexOf("#", idx)), 10);
+				idx = string.indexOf("#", idx) + 1;
 			}
-			while (_0x2222be < strlen || _0x593d6b > 0) {
-				if (_0x593d6b <= 0) {
-					_0x594ece = string.charCodeAt(_0x2222be);
-					_0x2222be++;
-					if (_0x594ece === _0x2dbbf2 && string.charAt(_0x2222be) === "#") {
-						_0x2222be++;
+			while (idx < strlen || parsed_int > 0) {
+				if (parsed_int <= 0) {
+					chr = string.charCodeAt(idx);
+					idx++;
+					if (chr === hash_charcode && string.charAt(idx) === "#") {
+						idx++;
 					}
-					if (_0x2222be >= strlen) {
+					if (idx >= strlen) {
 						if (size) {
-							ret_array[_0x21f834++] = _0x594ece;
+							ret_array[index++] = chr;
 						} else {
-							ret_array.push(_0x594ece);
+							ret_array.push(chr);
 						}
 						continue;
 					}
-					if (string.charAt(_0x2222be) === "#" && string.charAt(_0x2222be + 1) !== "#") {
-						_0x2222be++;
-						_0x593d6b = parseInt(string.substring(_0x2222be, string.indexOf("#", _0x2222be)), 10);
-						_0x2222be = string.indexOf("#", _0x2222be) + 1;
+					if (string.charAt(idx) === "#" && string.charAt(idx + 1) !== "#") {
+						idx++;
+						parsed_int = parseInt(string.substring(idx, string.indexOf("#", idx)), 10);
+						idx = string.indexOf("#", idx) + 1;
 					}
 				}
 				if (size) {
-					ret_array[_0x21f834++] = _0x594ece;
+					ret_array[index++] = chr;
 				} else {
-					ret_array.push(_0x594ece);
+					ret_array.push(chr);
 				}
-				_0x593d6b--;
+				parsed_int--;
 			}
 			return Uint8Array.from(ret_array);
 		}
-		for (_0x2171e7; _0x2171e7 < strlen; _0x2171e7 += 2) {
-			if (string[_0x2171e7] === "#") {
-				_0x158081 = string.indexOf("#", _0x2171e7 + 1);
-				_0x50b8ed = parseInt(string.substring(_0x2171e7 + 1, _0x158081), 10);
-				for (_0x261450 = 1; _0x261450 < _0x50b8ed; _0x261450++) {
+		for (i; i < strlen; i += 2) {
+			if (string[i] === "#") {
+				str_char = string.indexOf("#", i + 1);
+				int_parsed = parseInt(string.substring(i + 1, str_char), 10);
+				for (j = 1; j < int_parsed; j++) {
 					if (size) {
-						ret_array[_0x21f834++] = _0x1a4e36;
+						ret_array[index++] = val;
 					} else {
-						ret_array.push(_0x1a4e36);
+						ret_array.push(val);
 					}
 				}
-				_0x2171e7 = _0x158081 + 1;
+				i = str_char + 1;
 			}
-			if (_0x2171e7 < strlen) {
-				_0x1a4e36 = parseInt(string.substring(_0x2171e7, _0x2171e7 + 2), 16);
+			if (i < strlen) {
+				val = parseInt(string.substring(i, i + 2), 16);
 				if (size) {
-					ret_array[_0x21f834++] = _0x1a4e36;
+					ret_array[index++] = val;
 				} else {
-					ret_array.push(_0x1a4e36);
+					ret_array.push(val);
 				}
 			}
 		}

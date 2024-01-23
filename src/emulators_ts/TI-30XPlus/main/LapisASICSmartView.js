@@ -3,8 +3,8 @@
 Object.defineProperty(exports, "__esModule", {
 	"value": true
 });
-const lapis_asic = require("../../../../src/emulators_ts/LapisASIC");
-class LapisASICSmartView extends lapis_asic.LapisASIC {
+const LapisASIC = require("../../../../src/emulators_ts/LapisASIC");
+class LapisASICSmartView extends LapisASIC.LapisASIC {
 	setUpUART() {
 		return this.mcu.initUART();
 	}

@@ -64,7 +64,7 @@ class StatefileManager {
 			statefile.info.statefiletype = state.statefiletype;
 			statefile.info.osversion = state.osversion;
 			statefile.info.statefileversion = "2.1.0";
-			statefile.info.compatibility = 0x1;
+			statefile.info.compatibility = 1;
 			statefile.info.productflavor = state.productflavor;
 			statefile.info.checksum = this.getMd5String(statefile);
 			resolve(JSON.stringify(statefile));

@@ -15,24 +15,24 @@ class GenericScientificLCDForSmartview extends GenericLCDColumnMajor.GenericLCDC
 	}
 	create() {
 		if (!this.created) {
-			const _0xa199b = document.getElementById("calculatorDiv");
+			const calculatorDiv = document.getElementById("calculatorDiv");
 			console.log("Called create() from GenericScientificLCDForSmartview");
-			const _0x591702 = document.createElement("div");
-			_0x591702.id = "displayDiv";
-			_0x591702.className = "displayDiv";
-			_0x591702.style.display = this.displayOFF ? "none" : "block";
-			_0xa199b.appendChild(_0x591702);
-			const _0x504724 = document.createElement("canvas");
-			_0x504724.id = "display";
-			_0x504724.className = "display";
-			_0x504724.width = 384;
-			_0x504724.height = 144;
-			_0x591702.appendChild(_0x504724);
-			this.canvasContext = _0x504724.getContext("2d");
+			const div = document.createElement("div");
+			div.id = "displayDiv";
+			div.className = "displayDiv";
+			div.style.display = this.displayOFF ? "none" : "block";
+			calculatorDiv.appendChild(div);
+			const canvas = document.createElement("canvas");
+			canvas.id = "display";
+			canvas.className = "display";
+			canvas.width = 384;
+			canvas.height = 144;
+			div.appendChild(canvas);
+			this.canvasContext = canvas.getContext("2d");
 			this.created = true;
-			_0x504724.onmousedown = function (_0x3a7728) {
-				const _0x59e640 = typeof app;
-				if (_0x59e640 !== "undefined") {
+			canvas.onmousedown = function (_0x3a7728) {
+				const apptype = typeof app;
+				if (apptype !== "undefined") {
 					app.LCDClickEvent();
 				} else {
 					console.log("app is Undefined, we were not able to init the LCDClickEvent handler!");
@@ -41,13 +41,13 @@ class GenericScientificLCDForSmartview extends GenericLCDColumnMajor.GenericLCDC
 		}
 	}
 	start() {
-		return new Promise((_0x6b1d30, _0x136cfb) => {
+		return new Promise((resolve, reject) => {
 			if (!this.created) {
 				this.create();
 				this.refreshTimerID = window.setInterval(() => {
 					if (this.lastCompleteDataString) {
-						const _0x593769 = typeof app;
-						if (_0x593769 !== "undefined" && typeof app.setScreenUnidimentionalDataStrComp !== "undefined") {
+						const apptype = typeof app;
+						if (apptype !== "undefined" && typeof app.setScreenUnidimentionalDataStrComp !== "undefined") {
 							app.setScreenUnidimentionalDataStrComp(this.lastCompleteDataString);
 						} else {
 							console.log("Method not found");
@@ -57,41 +57,41 @@ class GenericScientificLCDForSmartview extends GenericLCDColumnMajor.GenericLCDC
 			}
 			this.screenChanged(this.lastPartialScreenDataBuffer);
 			this.topIconsChanged(this.topIconsStatus);
-			_0x6b1d30();
+			resolve();
 		});
 	}
-	setState(_0x25e8f) {
-		if (typeof _0x25e8f !== "undefined") {
-			let _0x380829 = _0x25e8f.length - this.INDICARTORS_STATUS_LENGTH;
-			const _0x178243 = _0x25e8f[_0x380829++] | _0x25e8f[_0x380829++] << 8 | _0x25e8f[_0x380829] << 16;
-			const _0x3cfb30 = _0x25e8f.length - this.INDICARTORS_STATUS_LENGTH;
-			this.lastPartialScreenDataBuffer = _0x25e8f.subarray(0, _0x3cfb30);
+	setState(state) {
+		if (typeof state !== "undefined") {
+			let statelen = state.length - this.INDICARTORS_STATUS_LENGTH;
+			const data = state[statelen++] | state[statelen++] << 8 | state[statelen] << 16;
+			const buffer_size = state.length - this.INDICARTORS_STATUS_LENGTH;
+			this.lastPartialScreenDataBuffer = state.subarray(0, buffer_size);
 			super.saveScreenData(this.lastPartialScreenDataBuffer);
-			super.saveTopIconsData(_0x178243);
+			super.saveTopIconsData(data);
 			this.buildAllScreenBufferColumnMajor();
 		}
 	}
-	screenChanged(_0x77e24) {
-		super.screenChanged(_0x77e24);
-		this.lastPartialScreenDataBuffer = _0x77e24;
+	screenChanged(screen) {
+		super.screenChanged(screen);
+		this.lastPartialScreenDataBuffer = screen;
 		this.buildAllScreenBufferColumnMajor();
 	}
-	topIconsChanged(_0x2a74d9) {
-		super.topIconsChanged(_0x2a74d9);
+	topIconsChanged(sbar) {
+		super.topIconsChanged(sbar);
 		this.buildAllScreenBufferColumnMajor();
 	}
 	buildAllScreenBufferColumnMajor() {
-		const _0x8dc01f = this.lastPartialTopIconsBuffer;
-		const _0x1ce525 = this.lastPartialScreenDataBuffer;
-		if (_0x8dc01f && _0x1ce525) {
-			let _0x526b78 = 0;
-			let _0x46e9a5 = 0;
-			this.completeScreenBuffer[0] = _0x8dc01f[_0x526b78++];
-			for (let _0x17eb0d = 1; _0x17eb0d < 1728; _0x17eb0d++) {
-				if (_0x17eb0d % 9 === 0) {
-					this.completeScreenBuffer[_0x17eb0d] = _0x8dc01f[_0x526b78++];
+		const sbar_buffer = this.lastPartialTopIconsBuffer;
+		const screen_buffer = this.lastPartialScreenDataBuffer;
+		if (sbar_buffer && screen_buffer) {
+			let j = 0;
+			let k = 0;
+			this.completeScreenBuffer[0] = sbar_buffer[j++];
+			for (let i = 1; i < 1728; i++) {
+				if (i % 9 === 0) {
+					this.completeScreenBuffer[i] = sbar_buffer[j++];
 				} else {
-					this.completeScreenBuffer[_0x17eb0d] = _0x1ce525[_0x46e9a5++];
+					this.completeScreenBuffer[i] = screen_buffer[k++];
 				}
 			}
 			this.lastCompleteDataString = this.uint8ToStr(this.completeScreenBuffer);
@@ -99,43 +99,43 @@ class GenericScientificLCDForSmartview extends GenericLCDColumnMajor.GenericLCDC
 			console.log("ErRor! Couln't build the complete screen buffer, invalid params!!");
 		}
 	}
-	drawIcon(_0x2a3d5a, _0x41ace3, _0xfc6cde, _0x27d059) {
-		super.drawIcon(_0x2a3d5a, _0x41ace3, _0xfc6cde, _0x27d059);
-		const _0x430548 = _0x2a3d5a > 0 ? _0x2a3d5a / 0x2 : 0;
-		if (_0x27d059) {
-			this.lastPartialTopIconsBuffer.set(_0xfc6cde, _0x430548);
+	drawIcon(icon, y, data, visible) {
+		super.drawIcon(icon, y, data, visible);
+		const _0x430548 = icon > 0 ? icon / 0x2 : 0;
+		if (visible) {
+			this.lastPartialTopIconsBuffer.set(data, _0x430548);
 		} else {
-			this.lastPartialTopIconsBuffer.fill(0, _0x430548, _0x430548 + _0xfc6cde.length);
+			this.lastPartialTopIconsBuffer.fill(0, _0x430548, _0x430548 + data.length);
 		}
 	}
-	uint8ToStr(_0x414501) {
-		if (_0x414501 !== null && _0x414501.length > 0) {
-			const _0x679df4 = [];
-			let _0x475503 = 0;
-			let _0x46bc21 = 0;
-			let _0x2695ca = _0x414501[_0x46bc21];
-			let _0x59b926;
-			while (_0x46bc21 < _0x414501.length) {
-				if (_0x2695ca !== (_0x59b926 = _0x414501[_0x46bc21++])) {
-					_0x679df4.push(_0x2695ca === 0 ? String.fromCharCode(0x100) : String.fromCharCode(_0x2695ca));
-					if (_0x475503 > 0x1) {
-						_0x679df4.push(String.fromCharCode(0x101));
-						_0x679df4.push(_0x475503);
-						_0x679df4.push(String.fromCharCode(0x101));
+	uint8ToStr(num) {
+		if (num !== null && num.length > 0) {
+			const arr = [];
+			let h = 0;
+			let i = 0;
+			let k = num[i];
+			let j;
+			while (i < num.length) {
+				if (k !== (j = num[i++])) {
+					arr.push(k === 0 ? String.fromCharCode(0x100) : String.fromCharCode(k));
+					if (h > 0x1) {
+						arr.push(String.fromCharCode(0x101));
+						arr.push(h);
+						arr.push(String.fromCharCode(0x101));
 					}
-					_0x475503 = 0;
-					_0x2695ca = _0x59b926;
+					h = 0;
+					k = j;
 				}
-				_0x475503++;
+				h++;
 			}
-			_0x679df4.push(_0x2695ca === 0 ? String.fromCharCode(0x100) : String.fromCharCode(_0x2695ca));
-			if (_0x475503 > 0x1) {
-				_0x679df4.push(String.fromCharCode(0x101));
-				_0x679df4.push(_0x475503);
-				_0x679df4.push(String.fromCharCode(0x101));
+			arr.push(k === 0 ? String.fromCharCode(0x100) : String.fromCharCode(k));
+			if (h > 1) {
+				arr.push(String.fromCharCode(0x101));
+				arr.push(h);
+				arr.push(String.fromCharCode(0x101));
 			}
-			const _0x17df5f = _0x679df4.join('');
-			return _0x17df5f;
+			const string = arr.join('');
+			return string;
 		} else {
 			console.log("unit2ToStr with invalid parameter!");
 			return null;

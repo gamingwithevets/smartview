@@ -5,15 +5,15 @@ var _0xea1af0 = this && this.__awaiter || function (_0x3a408c, _0x17450f, _0x27e
 		function _0x410cf1(_0x1d5ddd) {
 			try {
 				_0x54325b(_0x27ea69.next(_0x1d5ddd));
-			} catch (_0x137809) {
-				_0x549755(_0x137809);
+			} catch (e) {
+				_0x549755(e);
 			}
 		}
 		function _0x40bde6(_0x5d9170) {
 			try {
-				_0x54325b(_0x27ea69throw(_0x5d9170));
-			} catch (_0x456c6b) {
-				_0x549755(_0x456c6b);
+				_0x54325b(_0x27ea69.throw(_0x5d9170));
+			} catch (e) {
+				_0x549755(e);
 			}
 		}
 		function _0x54325b(_0x354f1e) {
@@ -28,6 +28,7 @@ var _0xea1af0 = this && this.__awaiter || function (_0x3a408c, _0x17450f, _0x27e
 		_0x54325b((_0x27ea69 = _0x27ea69.apply(_0x3a408c, _0x17450f || [])).next());
 	});
 };
+
 Object.defineProperty(exports, "__esModule", {
 	"value": true
 });
